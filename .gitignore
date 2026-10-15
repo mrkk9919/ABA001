@@ -1,0 +1,26 @@
+# dependencies
+node_modules
+
+# build output
+dist
+build
+*.tsbuildinfo
+
+# env & secrets (NEVER commit real credentials)
+.env
+.env.*
+!*.example
+artifacts/api-server/.env
+artifacts/api-server/keys/
+*.pem
+
+# test artifacts
+test-results
+e2e-results
+coverage
+
+# misc
+.DS_Store
+Thumbs.db
+.cache/
+.local/
