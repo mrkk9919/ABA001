@@ -566,6 +566,11 @@ export default function Transfer() {
   const [amount, setAmount]     = useState('');
   const [note, setNote]         = useState('');
   const [currency, setCurrency] = useState<'USD' | 'KHR'>('USD');
+  /** Recipient currency — the currency the PAYEE receives (USD or KHR).
+      The user picks this from the amount card label: pay in USD or pay in
+      KHR to the other party. The pay-from account stays independent and is
+      converted when its currency differs. */
+  const [payeeCur, setPayeeCur] = useState<'USD' | 'KHR'>('USD');
   const [accountId, setAccountId] = useState('1'); // default USD account
   const [success, setSuccess]   = useState(false);
   const [error, setError]       = useState('');
@@ -605,10 +610,11 @@ export default function Transfer() {
   }, [toAccount]);
 
   const selectedAccount = accounts.find((a) => a.id === accountId) ?? defaultAccount;
-  /** Recipient currency carried by the KHQR (USD or KHR). The user always
-      types the amount in the RECIPIENT's currency (e.g. a 28,800 KHR order),
-      then pays from the selected USD or KHR account. */
-  const payeeCurrency: 'USD' | 'KHR' = data?.currency ?? 'USD';
+  /** Recipient currency — user picks from the amount card label: pay the
+      other party in USD or in KHR. Initialised from the scanned KHQR payload
+      (or defaults to USD) when the form loads. The pay-from account stays
+      independent and is converted when its currency differs. */
+  const payeeCurrency: 'USD' | 'KHR' = payeeCur;
   const inputCurrency = payeeCurrency;
   /** Amount the recipient receives (typed amount, always in payee currency). */
   const payeeAmount = amount;
@@ -628,6 +634,9 @@ export default function Transfer() {
       setData(pending.data);
       rawRef.current = pending.raw;
       clearPendingTransfer();
+      // Initialise the recipient/pay currency from the scanned payload; the
+      // user can still switch USD ↔ KHR from the amount card label.
+      setPayeeCur(pending.data.currency ?? 'USD');
       // Pre-fill the amount from a dynamic QR. The typed amount is always in
       // the payee/order currency (payeeCurrency); the pay-from account stays
       // whatever the user selects (default USD) and is converted when needed.
@@ -642,6 +651,7 @@ export default function Transfer() {
     if (d) {
       setData(d);
       rawRef.current = DEMO_KHQR[0].qr;
+      setPayeeCur(d.currency ?? 'USD');
       if (tfMode !== 'internal') setToAccount(d.accountNumber || d.bakongId.split('@')[0] || '');
     }
   }, [setLocation]);
@@ -1023,8 +1033,8 @@ export default function Transfer() {
                     </>
                   )}
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${recipient ? 'bg-[#00A67E]/10 text-[#00A67E]' : 'bg-gray-100 text-gray-400'}`}>
-                  {recipient ? recipient.currency : '—'}
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${payeeCurrency === 'USD' ? 'bg-[#1A1F71]/10 text-[#1A1F71]' : 'bg-[#C8102E]/10 text-[#C8102E]'}`}>
+                  {payeeCurrency}
                 </span>
                 {bkCheck === 'checking' && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-gray-100 text-gray-500">验证中…</span>
@@ -1044,7 +1054,15 @@ export default function Transfer() {
               <div className="mt-3 bg-white rounded-2xl px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ចំនួនទឹកប្រាក់</p>
-                  <span className={`flex items-center gap-1 px-3 py-1 rounded-full border text-[12px] font-bold ${payeeCurrency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}>{payeeCurrency}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPayeeCur(p => (p === 'USD' ? 'KHR' : 'USD')); setAmount(''); setError(''); }}
+                    aria-label={`切换支付币种为 ${payeeCurrency === 'USD' ? 'KHR' : 'USD'}`}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full border text-[12px] font-bold active:scale-95 transition-all ${payeeCurrency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}
+                  >
+                    {payeeCurrency}
+                    <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
+                  </button>
                 </div>
                 <div className="flex items-end justify-center gap-1 min-h-[52px]">
                   <span className="text-[40px] font-extrabold text-gray-900 leading-none tracking-tight">{formatted()}</span>
@@ -1235,7 +1253,7 @@ export default function Transfer() {
                     </>
                   )}
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00A67E]/10 text-[#00A67E] shrink-0">{typedRecipient?.currency ?? data.currency}</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${payeeCurrency === 'USD' ? 'bg-[#1A1F71]/10 text-[#1A1F71]' : 'bg-[#C8102E]/10 text-[#C8102E]'}`}>{payeeCurrency}</span>
                 {bkCheck === 'checking' && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-gray-100 text-gray-500">验证中…</span>
                 )}
@@ -1254,7 +1272,15 @@ export default function Transfer() {
               <div className="mt-3 bg-white rounded-2xl px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">ចំនួនទឹកប្រាក់</p>
-                  <span className={`flex items-center gap-1 px-3 py-1 rounded-full border text-[12px] font-bold ${payeeCurrency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}>{payeeCurrency}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPayeeCur(p => (p === 'USD' ? 'KHR' : 'USD')); setAmount(''); setError(''); }}
+                    aria-label={`切换支付币种为 ${payeeCurrency === 'USD' ? 'KHR' : 'USD'}`}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full border text-[12px] font-bold active:scale-95 transition-all ${payeeCurrency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}
+                  >
+                    {payeeCurrency}
+                    <ChevronDown className="w-3 h-3" strokeWidth={2.5} />
+                  </button>
                 </div>
                 <div className="flex items-end justify-center gap-1 min-h-[52px]">
                   <span className="text-[40px] font-extrabold text-gray-900 leading-none tracking-tight">{formatted()}</span>
