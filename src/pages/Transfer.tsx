@@ -1,0 +1,12 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, CheckCircle2, Check, Cloud, ChevronDown, Lock, Delete, Share2, RotateCcw, FileDown, History, MessageCircle, Star } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
+import { parseKHQR, DEMO_KHQR, type KHQRData } from '@/lib/khqr';
+import { addTxn } from '@/lib/txnStore';
+import { deductBalance, getBalance } from '@/lib/balanceStore';
+import { getTtsLang, speakTransferConfirm, speakTransferSuccess } from '@/lib/tts';
+import BankLogo from '@/components/BankLogo';
+import { accounts, defaultAccount, type Account } from '../data/accounts';
+import { checkBakongAccount, initiateBakongPayment, pollBakongPayment, type BakongPaymentResult } from '@/lib/bakongClient';
