@@ -925,8 +925,8 @@ export default function Transfer() {
                 <p className="text-[13.5px] font-bold text-gray-800 leading-snug">ផ្ទេរទៅគណនី ABA ណាមួយ</p>
               </div>
 
-              {/* Choose account (USD / KHR, tap to switch) */}
-              <button
+              {/* Choose pay currency (USD / KHR) — switches the pay-from account */}
+              <div
                 onClick={() => {
                   const next = accountId === '1' ? '5' : '1';
                   const acct = accounts.find((a) => a.id === next)!;
@@ -935,21 +935,50 @@ export default function Transfer() {
                   setAmount('');
                   setError('');
                 }}
-                className="mt-3 w-full bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] flex items-center justify-between text-left active:bg-gray-50"
+                className="mt-3 w-full bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] flex items-center justify-between text-left active:bg-gray-50 cursor-pointer"
               >
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold text-gray-400">ជ្រើសរើសគណនីរបស់អ្នក</p>
+                  <p className="text-[11px] font-bold text-gray-400">ជ្រើសរើសគណនីរបស់អ្នក · រូបិយប័ណ្ណទូទាត់</p>
                   <p className="text-[15px] font-extrabold text-gray-900 mt-1 truncate">
                     {selectedAccount.name}: {currency === 'KHR'
                       ? Number(getBalance(selectedAccount.id, selectedAccount.balance ?? '0')).toLocaleString() + ' ៛'
                       : '$' + Number(getBalance(selectedAccount.id, selectedAccount.balance ?? '0')).toFixed(2)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full border ${currency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}>{currency}</span>
+                <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex rounded-xl bg-gray-100 p-0.5" role="group" aria-label="Pay currency">
+                    <button
+                      onClick={() => {
+                        if (currency !== 'USD') {
+                          const acct = accounts.find((a) => a.id === '1')!;
+                          setAccountId(acct.id);
+                          setCurrency('USD');
+                          setAmount('');
+                          setError('');
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-[10px] text-[12px] font-extrabold transition-colors ${currency === 'USD' ? 'bg-white text-[#1A1F71] shadow-sm' : 'text-gray-500'}`}
+                    >
+                      USD
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (currency !== 'KHR') {
+                          const acct = accounts.find((a) => a.id === '5')!;
+                          setAccountId(acct.id);
+                          setCurrency('KHR');
+                          setAmount('');
+                          setError('');
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-[10px] text-[12px] font-extrabold transition-colors ${currency === 'KHR' ? 'bg-white text-[#C8102E] shadow-sm' : 'text-gray-500'}`}
+                    >
+                      KHR
+                    </button>
+                  </div>
                   <ChevronDown className="w-4 h-4 text-gray-400" strokeWidth={2.5} />
                 </div>
-              </button>
+              </div>
 
               {/* Recipient account number */}
               <div className="mt-3 bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
@@ -1108,8 +1137,8 @@ export default function Transfer() {
                 <p className="text-[13.5px] font-bold text-gray-800 leading-snug">ផ្ទេរទៅគណនីណាមួយ</p>
               </div>
 
-              {/* Choose account (USD / KHR, tap to switch) */}
-              <button
+              {/* Choose pay currency (USD / KHR) — switches the pay-from account */}
+              <div
                 onClick={() => {
                   const next = accountId === '1' ? '5' : '1';
                   const acct = accounts.find((a) => a.id === next)!;
@@ -1118,21 +1147,50 @@ export default function Transfer() {
                   setAmount('');
                   setError('');
                 }}
-                className="mt-3 w-full bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] flex items-center justify-between text-left active:bg-gray-50"
+                className="mt-3 w-full bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] flex items-center justify-between text-left active:bg-gray-50 cursor-pointer"
               >
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold text-gray-400">ជ្រើសរើសគណនីរបស់អ្នក</p>
+                  <p className="text-[11px] font-bold text-gray-400">ជ្រើសរើសគណនីរបស់អ្នក · រូបិយប័ណ្ណទូទាត់</p>
                   <p className="text-[15px] font-extrabold text-gray-900 mt-1 truncate">
                     {selectedAccount.name}: {currency === 'KHR'
                       ? Number(getBalance(selectedAccount.id, selectedAccount.balance ?? '0')).toLocaleString() + ' ៛'
                       : '$' + Number(getBalance(selectedAccount.id, selectedAccount.balance ?? '0')).toFixed(2)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full border ${currency === 'USD' ? 'border-[#1A1F71] text-[#1A1F71]' : 'border-[#C8102E] text-[#C8102E]'}`}>{currency}</span>
+                <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex rounded-xl bg-gray-100 p-0.5" role="group" aria-label="Pay currency">
+                    <button
+                      onClick={() => {
+                        if (currency !== 'USD') {
+                          const acct = accounts.find((a) => a.id === '1')!;
+                          setAccountId(acct.id);
+                          setCurrency('USD');
+                          setAmount('');
+                          setError('');
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-[10px] text-[12px] font-extrabold transition-colors ${currency === 'USD' ? 'bg-white text-[#1A1F71] shadow-sm' : 'text-gray-500'}`}
+                    >
+                      USD
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (currency !== 'KHR') {
+                          const acct = accounts.find((a) => a.id === '5')!;
+                          setAccountId(acct.id);
+                          setCurrency('KHR');
+                          setAmount('');
+                          setError('');
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-[10px] text-[12px] font-extrabold transition-colors ${currency === 'KHR' ? 'bg-white text-[#C8102E] shadow-sm' : 'text-gray-500'}`}
+                    >
+                      KHR
+                    </button>
+                  </div>
                   <ChevronDown className="w-4 h-4 text-gray-400" strokeWidth={2.5} />
                 </div>
-              </button>
+              </div>
 
               {/* Recipient account number */}
               <div className="mt-3 bg-white rounded-2xl px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
