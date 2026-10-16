@@ -26,6 +26,26 @@ export function setTtsLang(lang: TtsLang) {
 const LANG_TAG: Record<TtsLang, string> = { zh: 'zh-CN', en: 'en-US', km: 'km-KH' };
 const VOICE_RE: Record<TtsLang, RegExp> = { zh: /^zh/i, en: /^en/i, km: /^km/i };
 
+/* Normal (1x) speech rate — the ABA announcements must be read at a calm,
+   natural pace, never sped up. */
+const SPEECH_RATE = 1;
+
+/* Browsers load the voice list asynchronously: the first getVoices() call is
+   often empty, so the engine falls back to a default voice that can sound
+   rushed or wrong. Pre-warm the list once so speak() picks the matching
+   natural voice and reads at the normal 1x rate. */
+let voicesWarmed = false;
+function warmVoices() {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || voicesWarmed) return;
+  voicesWarmed = true;
+  try {
+    const ss = window.speechSynthesis as SpeechSynthesis & { getVoices?: () => SpeechSynthesisVoice[] };
+    ss.getVoices?.();
+    ss.onvoiceschanged = () => { ss.getVoices?.(); };
+  } catch { /* speech unavailable — announcements stay silent */ }
+}
+if (typeof window !== 'undefined') warmVoices();
+
 function fmtAmount(amount: number, currency: 'USD' | 'KHR', lang: TtsLang): string {
   const n = Number(amount).toLocaleString();
   if (currency === 'KHR') {
@@ -47,9 +67,18 @@ function speak(text: string, lang: TtsLang): boolean {
     window.speechSynthesis.cancel();
     const utter = new Utterance(text);
     utter.lang = LANG_TAG[lang];
-    utter.rate = 1;
+    // Normal 1x pace for every announcement (never sped up).
+    utter.rate = SPEECH_RATE;
     utter.pitch = 1;
-    const voice = window.speechSynthesis.getVoices().find((v) => VOICE_RE[lang].test(v.lang));
+    // Prefer the matching language voice (pre-warmed above) so the reading
+    // sounds natural at the normal rate instead of a default engine.
+    let voice: SpeechSynthesisVoice | undefined;
+    try {
+      const ss = window.speechSynthesis as SpeechSynthesis & { getVoices?: () => SpeechSynthesisVoice[] };
+      const voices = ss.getVoices?.() ?? [];
+      voice = voices.find((v) => VOICE_RE[lang].test(v.lang))
+        ?? voices.find((v) => v.lang === LANG_TAG[lang]);
+    } catch { voice = undefined; }
     if (voice) utter.voice = voice;
     window.speechSynthesis.speak(utter);
     return true;
@@ -66,7 +95,7 @@ function speak(text: string, lang: TtsLang): boolean {
  */
 export function speakTransferConfirm(amount: number, currency: 'USD' | 'KHR', lang: TtsLang): boolean {
   let text: string;
-  if (lang === 'zh') text = `你转出 ${fmtAmount(amount, currency, 'zh')} 的资金，请你确认`;
+  if (lang === 'zh') text = `你转出 ${fmtAmount(amount, currency, 'zh')}的资金，请你确认`;
   else if (lang === 'km') text = `អ្នកកំពុងផ្ទេរចំនួនទឹកប្រាក់ ${fmtAmount(amount, currency, 'km')} សូមបញ្ជាក់`;
   else text = `You are transferring out ${fmtAmount(amount, currency, 'en')}, please confirm.`;
   return speak(text, lang);
@@ -83,7 +112,7 @@ export function speakTransferConfirm(amount: number, currency: 'USD' | 'KHR', la
 export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'USD' | 'KHR'): boolean {
   let text: string;
   if (lang === 'zh') {
-    text = `转账成功，你已转出 ${fmtAmount(amount, currency, 'zh')} 的资金，请你确认`;
+    text = `转账成功，你已转出 ${fmtAmount(amount, currency, 'zh')}的资金，请你确认`;
   } else if (lang === 'km') {
     text = `ផ្ទេរជោគជ័យ អ្នកបានផ្ទេរចំនួនទឹកប្រាក់ ${fmtAmount(amount, currency, 'km')} សូមបញ្ជាក់`;
   } else {
