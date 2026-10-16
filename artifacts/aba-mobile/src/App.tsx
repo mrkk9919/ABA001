@@ -13,6 +13,7 @@ import Transfer from '@/pages/Transfer';
 import Cards from '@/pages/Cards';
 import Settings from '@/pages/Settings';
 import SettingsFeatures from '@/pages/SettingsFeatures';
+import Profile from '@/pages/Profile';
 import ReceiveQr from '@/pages/ReceiveQr';
 import Payments from '@/pages/Payments';
 import InternationalTransfer from '@/pages/InternationalTransfer';
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/cards" component={Cards} />
       <Route path="/settings" component={Settings} />
       <Route path="/settings/features" component={SettingsFeatures} />
+      <Route path="/settings/profile" component={Profile} />
       <Route path="/receive" component={ReceiveQr} />
       <Route path="/payments" component={Payments} />
       <Route path="/international" component={InternationalTransfer} />

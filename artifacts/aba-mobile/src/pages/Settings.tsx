@@ -60,7 +60,7 @@ export default function Settings() {
   const lastLogin = `Login ចុងក្រោយ: ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} | ${now.getDate()} ${KHMER_MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 
   const rows: { icon: React.ReactNode; label: string; value?: string; toggle?: boolean; onToggle?: (v: boolean) => void; route?: string }[] = [
-    { icon: <User className="w-5 h-5 text-[#7B4FE8]" strokeWidth={2} />, label: 'ប្រូហ្វាល់របស់ខ្ញុំ' },
+    { icon: <User className="w-5 h-5 text-[#7B4FE8]" strokeWidth={2} />, label: 'ប្រូហ្វាល់របស់ខ្ញុំ', route: '/settings/profile' },
     { icon: <ShieldCheck className="w-5 h-5 text-[#7B4FE8]" strokeWidth={2} />, label: 'សុវត្ថិភាព' },
     { icon: <Sparkles className="w-5 h-5 text-[#7B4FE8]" strokeWidth={2} />, label: 'មុខងារបន្ថែម', route: '/settings/features' },
     { icon: <Globe className="w-5 h-5 text-[#7B4FE8]" strokeWidth={2} />, label: 'ភាសា', value: 'ភាសាខ្មែរ' },
