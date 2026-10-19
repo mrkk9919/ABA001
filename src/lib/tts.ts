@@ -109,7 +109,8 @@ export function speakTransferConfirm(amount: number, currency: 'USD' | 'KHR', la
  * forbade reading out the balance):
  *   zh: 转账成功，你已转出 3.00 美元的资金，请你确认
  *   en: Transfer successful. You have transferred out $3.00, please confirm.
- *   km: ជូនដំណឹង [amount in Khmer words] ដុល្លា  (e.g. 88 → ជូនដំណឹង ប្រាំបី ដប់ ប្រាំបី ដុល្លា)
+ *   km: ទឹកប្រាក់ចំនួន [amount in Khmer words] បានវេរចេញ សូមបញ្ជាក់
+ *       (e.g. 88 → ទឹកប្រាក់ចំនួន ប្រាំបី ដប់ ប្រាំបី ដុល្លា បានវេរចេញ សូមបញ្ជាក់)
  */
 export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'USD' | 'KHR'): boolean {
   let text: string;
@@ -117,9 +118,9 @@ export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'U
     text = `转账成功，你已转出 ${fmtAmount(amount, currency, 'zh')}的资金，请你确认`;
   } else if (lang === 'km') {
     if (currency === 'USD') {
-      text = `ជូនដំណឹង ${amountToKhmerSpeech(amount)}`;
+      text = `ទឹកប្រាក់ចំនួន ${amountToKhmerSpeech(amount)} បានវេរចេញ សូមបញ្ជាក់`;
     } else {
-      text = `ផ្ទេរជោគជ័យ អ្នកបានផ្ទេរចំនួនទឹកប្រាក់ ${fmtAmount(amount, currency, 'km')} សូមបញ្ជាក់`;
+      text = `ទឹកប្រាក់ចំនួន ${fmtAmount(amount, currency, 'km')} បានវេរចេញ សូមបញ្ជាក់`;
     }
   } else {
     text = `Transfer successful. You have transferred out ${fmtAmount(amount, currency, 'en')}, please confirm.`;

@@ -53,9 +53,9 @@ router.get("/khmer-tts", (req, res) => {
 
   let text: string;
   if (currency === "USD") {
-    text = `ជូនដំណឹង ${amountToKhmerSpeech(amount)}`;
+    text = `ទឹកប្រាក់ចំនួន ${amountToKhmerSpeech(amount)} បានវេរចេញ សូមបញ្ជាក់`;
   } else {
-    text = `ជូនដំណឹង ${numberToKhmer(Math.round(amount))} រៀល`;
+    text = `ទឹកប្រាក់ចំនួន ${numberToKhmer(Math.round(amount))} រៀល បានវេរចេញ សូមបញ្ជាក់`;
   }
 
   res.json({ text, amount, currency });
