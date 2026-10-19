@@ -129,9 +129,8 @@ export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'U
 }
 
 /**
- * Async version — first checks the /api/khmer-tts endpoint for a pre-recorded
- * MP3 audio. If available, plays the real audio file. Otherwise falls back
- * to the browser Web Speech API (speakTransferSuccess).
+ * Async version — calls the backend TTS API to generate real Khmer audio
+ * for ANY amount. Falls back to browser Web Speech API if the API is down.
  *
  * Call this on transfer success for the best audio quality.
  */
@@ -140,17 +139,25 @@ export async function speakTransferSuccessSmart(
   amount: number,
   currency: 'USD' | 'KHR',
 ): Promise<void> {
-  // Only attempt pre-recorded audio for Khmer USD (we have those MP3s)
-  if (lang === 'km' && currency === 'USD') {
+  // For Khmer language, use the real TTS API (works for any amount)
+  if (lang === 'km') {
     try {
-      const resp = await fetch(`/api/khmer-tts?amount=${amount}&currency=USD`);
+      const resp = await fetch('/api/khmer-tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: String(amount),
+          currency: currency,
+          template: 'ជូនដំណឹង ****',
+        }),
+      });
       if (resp.ok) {
-        const data = await resp.json();
-        if (data.audioUrl) {
-          const audio = new Audio(data.audioUrl);
-          await audio.play();
-          return;
-        }
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        await audio.play();
+        URL.revokeObjectURL(url);
+        return;
       }
     } catch {
       // API unavailable — fall through to Web Speech
