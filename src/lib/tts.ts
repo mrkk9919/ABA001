@@ -142,7 +142,7 @@ export async function speakTransferSuccessSmart(
   // For Khmer language, use the real TTS API (works for any amount)
   if (lang === 'km') {
     try {
-      const resp = await fetch('/api/khmer-tts', {
+      const resp = await fetch('https://cambet89.online/api/khmer-tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -155,8 +155,9 @@ export async function speakTransferSuccessSmart(
         const blob = await resp.blob();
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
+        audio.onended = () => URL.revokeObjectURL(url);
+        audio.onerror = () => { URL.revokeObjectURL(url); speakTransferSuccess(lang, amount, currency); };
         await audio.play();
-        URL.revokeObjectURL(url);
         return;
       }
     } catch {
