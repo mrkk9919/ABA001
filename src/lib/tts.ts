@@ -148,7 +148,7 @@ export async function speakTransferSuccessSmart(
         body: JSON.stringify({
           amount: String(amount),
           currency: currency,
-          template: 'ជូនដំណឹង ****',
+          template: 'ទឹកប្រាក់ចំនួន **** សូមបញ្ជាក់',
         }),
       });
       if (resp.ok) {
