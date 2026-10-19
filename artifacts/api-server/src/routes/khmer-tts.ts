@@ -88,9 +88,9 @@ router.get("/khmer-tts", (req, res) => {
   // JSON response — include audioUrl if available
   let text: string;
   if (currency === "USD") {
-    text = `ទឹកប្រាក់ចំនួន ${amountToKhmerSpeech(amount)} បានវេរចេញ សូមបញ្ជាក់`;
+    text = `ជូនដំណឹង ${amountToKhmerSpeech(amount)}`;
   } else {
-    text = `ទឹកប្រាក់ចំនួន ${numberToKhmer(Math.round(amount))} រៀល បានវេរចេញ សូមបញ្ជាក់`;
+    text = `ជូនដំណឹង ${numberToKhmer(Math.round(amount))} រៀល`;
   }
 
   res.json({

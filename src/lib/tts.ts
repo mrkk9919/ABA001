@@ -118,9 +118,9 @@ export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'U
     text = `转账成功，你已转出 ${fmtAmount(amount, currency, 'zh')}的资金，请你确认`;
   } else if (lang === 'km') {
     if (currency === 'USD') {
-      text = `ទឹកប្រាក់ចំនួន ${amountToKhmerSpeech(amount)} បានវេរចេញ សូមបញ្ជាក់`;
+      text = `ជូនដំណឹង ${amountToKhmerSpeech(amount)}`;
     } else {
-      text = `ទឹកប្រាក់ចំនួន ${fmtAmount(amount, currency, 'km')} បានវេរចេញ សូមបញ្ជាក់`;
+      text = `ជូនដំណឹង ${numberToKhmer(Math.round(amount))} រៀល`;
     }
   } else {
     text = `Transfer successful. You have transferred out ${fmtAmount(amount, currency, 'en')}, please confirm.`;
