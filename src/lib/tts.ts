@@ -129,6 +129,38 @@ export function speakTransferSuccess(lang: TtsLang, amount: number, currency: 'U
 }
 
 /**
+ * Async version — first checks the /api/khmer-tts endpoint for a pre-recorded
+ * MP3 audio. If available, plays the real audio file. Otherwise falls back
+ * to the browser Web Speech API (speakTransferSuccess).
+ *
+ * Call this on transfer success for the best audio quality.
+ */
+export async function speakTransferSuccessSmart(
+  lang: TtsLang,
+  amount: number,
+  currency: 'USD' | 'KHR',
+): Promise<void> {
+  // Only attempt pre-recorded audio for Khmer USD (we have those MP3s)
+  if (lang === 'km' && currency === 'USD') {
+    try {
+      const resp = await fetch(`/api/khmer-tts?amount=${amount}&currency=USD`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.audioUrl) {
+          const audio = new Audio(data.audioUrl);
+          await audio.play();
+          return;
+        }
+      }
+    } catch {
+      // API unavailable — fall through to Web Speech
+    }
+  }
+  // Fallback: browser TTS
+  speakTransferSuccess(lang, amount, currency);
+}
+
+/**
  * Incoming-payment (PaySound) announcement — speaks the received transfer
  * amount, never the account balance:
  *   zh: 收到转账金额 5.00 美元，请您确认

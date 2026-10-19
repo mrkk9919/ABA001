@@ -6,7 +6,7 @@ import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
 import { parseKHQR, DEMO_KHQR, type KHQRData } from '@/lib/khqr';
 import { addTxn } from '@/lib/txnStore';
 import { deductBalance, getBalance } from '@/lib/balanceStore';
-import { getTtsLang, speakTransferConfirm, speakTransferSuccess } from '@/lib/tts';
+import { getTtsLang, speakTransferConfirm, speakTransferSuccessSmart } from '@/lib/tts';
 import BankLogo from '@/components/BankLogo';
 import { accounts, defaultAccount, type Account } from '../data/accounts';
 import { checkBakongAccount, initiateBakongPayment, pollBakongPayment, type BakongPaymentResult } from '@/lib/bakongClient';
@@ -737,7 +737,8 @@ export default function Transfer() {
     setPwError('');
     // Speak the confirmed OUTBOUND amount (what was sent to the recipient),
     // never the remaining balance (user explicitly asked not to read balance).
-    speakTransferSuccess(getTtsLang(), parseFloat(payeeAmount) || 0, payeeCurrency);
+    // Uses pre-recorded MP3 if available, falls back to browser TTS.
+    speakTransferSuccessSmart(getTtsLang(), parseFloat(payeeAmount) || 0, payeeCurrency);
     setSuccess(true);
   };
 
