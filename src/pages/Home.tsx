@@ -8,8 +8,6 @@ import {
 } from 'lucide-react';
 import { defaultAccount } from '../data/accounts';
 import { getBalance } from '../lib/balanceStore';
-import abaLoanBanner from '../assets/aba-loan-banner.jpg';
-import abaBalanceDots from '../assets/aba-balance-dots.png';
 
 /* ─── Grey/white cartoon cat avatar (Tom style) ─────────────────────────────── */
 const TomCatAvatar = () => (
@@ -399,14 +397,17 @@ const ScrollPills = () => {
   );
 };
 
-/* ─── News & Promotion Banner (real ABA loan image) ─────────────────────────── */
+/* ─── News & Promotion Banner (CSS gradient) ───────────────────────────────── */
 const NewsBanner = () => (
-  <div className="relative h-[140px] rounded-2xl overflow-hidden shadow-md">
-    <img
-      src={abaLoanBanner}
-      alt="ABA Loan Promotion 6.5%"
-      className="w-full h-full object-cover"
-    />
+  <div className="relative h-[140px] rounded-2xl overflow-hidden shadow-md bg-gradient-to-br from-[#E8002D] via-[#C80024] to-[#9B001C]">
+    <div className="absolute inset-0 flex flex-col justify-center px-5">
+      <span className="text-white/80 text-xs font-medium mb-1">Special Offer</span>
+      <span className="text-white text-xl font-bold leading-tight">ABA Loan</span>
+      <span className="text-white/90 text-sm mt-1">Personal loan from 6.5% p.a.</span>
+    </div>
+    {/* Decorative circle */}
+    <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10" />
+    <div className="absolute -right-4 bottom-0 w-20 h-20 rounded-full bg-white/5" />
     {/* Dots indicator */}
     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
       {[0, 1, 2].map(i => (
@@ -549,9 +550,8 @@ const MiniAppsSection = () => {
   );
 };
 
-/* ─── Receive Options (inlined under មីនីអេប — mirrors the official app,
-   where the receive-money options are page content, not a bottom sheet) ────── */
-const ReceiveOptionsSection = () => {
+/* ─── Receive Options Sheet (bottom sheet, mirrors official ABA app) ───────── */
+const ReceiveOptionsSheet = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [, setLocation] = useLocation();
 
   const options = [
@@ -559,7 +559,7 @@ const ReceiveOptionsSection = () => {
       title: 'ពីគណនី ABA របស់ខ្ញុំ',
       subtitle: 'ផ្ទេរប្រាក់ពីគណនីផ្ទាល់ខ្លួនរបស់អ្នក',
       icon: <Wallet className="w-5 h-5 text-gray-600" strokeWidth={1.8} />,
-      action: () => { sessionStorage.setItem('aba.tf.mode', 'internal'); setLocation('/transfer'); },
+      action: () => { sessionStorage.setItem('aba.tf.mode', 'internal'); setLocation('/transfer'); onClose(); },
     },
     {
       title: 'ពីគណនីរបស់ខ្ញុំនៅក្នុងធនាគារផ្សេងទៀត',
@@ -570,43 +570,73 @@ const ReceiveOptionsSection = () => {
           <path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.8 2.5 2 2.5.8 2.5 2-1 2-2.5 2-2-.5-2.5-1.5M12 6v2M12 16v2" strokeLinecap="round" />
         </svg>
       ),
-      action: () => { sessionStorage.setItem('aba.tf.mode', 'cross'); setLocation('/transfer'); },
+      action: () => { sessionStorage.setItem('aba.tf.mode', 'cross'); setLocation('/transfer'); onClose(); },
     },
     {
       title: 'តាម ABA QR',
       subtitle: 'ទទួលលុយភ្លាមៗដោយបង្ហាញ ABA QR របស់អ្នក',
       icon: <QrCode className="w-5 h-5 text-gray-600" strokeWidth={1.8} />,
-      action: () => { setLocation('/receive'); },
+      action: () => { setLocation('/receive'); onClose(); },
     },
     {
       title: 'តាមរយៈការផ្ញើ ABA QR',
       subtitle: 'ស្នើសុំការទូទាត់ពីអ្នកដទៃ ដោយចែករំលែក ABA QR ឬតំណបង់ប្រាក់',
       icon: <Link2 className="w-5 h-5 text-gray-600" strokeWidth={1.8} />,
-      action: () => { setLocation('/receive'); },
+      action: () => { setLocation('/receive'); onClose(); },
     },
   ];
 
   return (
-    <div id="receive-options" className="space-y-2.5 scroll-mt-4">
-      <h3 className="text-[15px] font-extrabold text-gray-900">ទទួលលុយ:</h3>
-      <div className="bg-white rounded-2xl px-3 py-2 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
-        {options.map((opt, i) => (
-          <button
-            key={i}
-            onClick={opt.action}
-            className="w-full flex items-start gap-3.5 px-2 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors text-left"
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/40 z-40"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[24px] z-50 pb-8 shadow-2xl"
           >
-            <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0 mt-0.5">
-              {opt.icon}
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-bold text-gray-900 leading-tight">{opt.title}</p>
-              <p className="text-[12px] text-gray-500 leading-snug mt-0.5">{opt.subtitle}</p>
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 bg-gray-300 rounded-full" />
             </div>
-          </button>
-        ))}
-      </div>
-    </div>
+
+            {/* Title */}
+            <div className="px-5 pb-2">
+              <h3 className="text-[18px] font-extrabold text-gray-900">ទទួលលុយ:</h3>
+            </div>
+
+            {/* Options */}
+            <div className="px-3">
+              {options.map((opt, i) => (
+                <button
+                  key={i}
+                  onClick={opt.action}
+                  className="w-full flex items-start gap-3.5 px-3 py-3.5 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors text-left"
+                >
+                  <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0 mt-0.5">
+                    {opt.icon}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-bold text-gray-900 leading-tight">{opt.title}</p>
+                    <p className="text-[12px] text-gray-500 leading-snug mt-0.5">{opt.subtitle}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -878,14 +908,7 @@ const BottomNav = ({ active, setActive }: { active: string; setActive: (v: strin
 export default function Home() {
   const [showBalance, setShowBalance] = useState(true);
   const [showSendSheet, setShowSendSheet] = useState(false);
-
-  /* ទទួលលុយ is now inlined page content under មីនីអេប (see
-     ReceiveOptionsSection); tapping the card action scrolls to it instead
-     of opening a bottom sheet. */
-  const scrollToReceive = () => {
-    const el = document.getElementById('receive-options');
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  const [showReceiveSheet, setShowReceiveSheet] = useState(false);
 
   return (
     <div className="min-h-[100dvh] md:h-screen md:min-h-screen bg-gray-300 flex items-center justify-center md:p-4 font-sans select-none">
@@ -898,7 +921,7 @@ export default function Home() {
             <AccountCard
               show={showBalance}
               setShow={setShowBalance}
-              onReceiveClick={scrollToReceive}
+              onReceiveClick={() => setShowReceiveSheet(true)}
               onSendClick={() => setShowSendSheet(true)}
             />
             <FeatureGrid />
@@ -911,12 +934,12 @@ export default function Home() {
             </div>
 
             <MiniAppsSection />
-            <ReceiveOptionsSection />
             <DiscoverSection />
           </div>
         </div>
 
         <SendOptionsSheet open={showSendSheet} onClose={() => setShowSendSheet(false)} />
+        <ReceiveOptionsSheet open={showReceiveSheet} onClose={() => setShowReceiveSheet(false)} />
       </div>
     </div>
   );
