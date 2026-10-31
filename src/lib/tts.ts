@@ -44,6 +44,11 @@ const OPENAI_TTS_MODEL = 'tts-1';
 
 async function speakOpenAI(text: string): Promise<boolean> {
   if (!OPENAI_TTS_KEY) return false;
+  // Hard timeout: if the TTS endpoint is unreachable / slow (common on
+  // mobile networks in Cambodia), fall back to browser TTS immediately
+  // instead of hanging silently forever.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
     const resp = await fetch(OPENAI_TTS_ENDPOINT, {
       method: 'POST',
@@ -54,7 +59,9 @@ async function speakOpenAI(text: string): Promise<boolean> {
         input: text.slice(0, 4000),
         response_format: 'mp3',
       }),
+      signal: ctrl.signal,
     });
+    clearTimeout(timer);
     if (!resp.ok) return false;
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
@@ -64,6 +71,7 @@ async function speakOpenAI(text: string): Promise<boolean> {
     await audio.play();
     return true;
   } catch {
+    clearTimeout(timer);
     return false;
   }
 }
@@ -178,6 +186,8 @@ export async function speakTransferSuccessSmart(
   // Khmer: OpenAI TTS does not support Khmer, so use the cambet89 server
   // Khmer TTS (works for any amount) with browser TTS as the final fallback.
   if (lang === 'km') {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
     try {
       const resp = await fetch('https://cambet89.online/api/khmer-tts', {
         method: 'POST',
@@ -187,7 +197,9 @@ export async function speakTransferSuccessSmart(
           currency: currency,
           template: 'ទឹកប្រាក់ចំនួន **** សូមបញ្ជាក់',
         }),
+        signal: ctrl.signal,
       });
+      clearTimeout(timer);
       if (resp.ok) {
         const blob = await resp.blob();
         const url = URL.createObjectURL(blob);
@@ -198,6 +210,7 @@ export async function speakTransferSuccessSmart(
         return;
       }
     } catch {
+      clearTimeout(timer);
       // API unavailable — fall through to Web Speech
     }
     speakTransferSuccess(lang, amount, currency);
