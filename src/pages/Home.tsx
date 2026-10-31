@@ -183,37 +183,36 @@ const DotMatrixAmount = ({ amount }: { amount: string }) => {
   );
 };
 
-/* ─── Wordmark Dot Pattern (shown when balance is hidden) ───────────────────── */
-const logoRows = [
-  '111001111001111001111',
-  '100101001001001001001',
-  '111001111001111001111',
-  '001001001001001001001',
-  '111001111001111001111',
-  '100001001001001001001',
-  '111001111001111001111',
-];
-
-const WordmarkDots = () => {
-  const dotSpacing = 3.2;
+/* ─── Hidden-balance dot matrix (matches ABA official style) ─────────────────
+   A wide block of white dots on the red card — looks like a dot-matrix display
+   with the amount hidden (all segments lit "888888" style). Renders 6 hidden
+   digits (5×5 dots each) with 1-column gaps, matching the reference screenshot. */
+const HiddenBalanceDots = () => {
+  const dotSpacing = 4.4;
   const dots: Array<{ x: number; y: number }> = [];
-  logoRows.forEach((row, rowIndex) => {
-    [...row].forEach((pixel, colIndex) => {
-      if (pixel === '1') {
+  const DIGITS = 6;
+  const COLS_PER_DIGIT = 5;
+  const ROWS = 5;
+  const GAP_COL = 1; // empty column between digits
+  const totalCols = DIGITS * COLS_PER_DIGIT + (DIGITS - 1) * GAP_COL;
+  for (let d = 0; d < DIGITS; d++) {
+    const colOffset = d * (COLS_PER_DIGIT + GAP_COL);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS_PER_DIGIT; c++) {
         dots.push({
-          x: colIndex * dotSpacing + dotSpacing / 2,
-          y: rowIndex * dotSpacing + dotSpacing / 2,
+          x: (colOffset + c) * dotSpacing + dotSpacing / 2,
+          y: r * dotSpacing + dotSpacing / 2,
         });
       }
-    });
-  });
-  const width = logoRows[0].length * dotSpacing;
-  const height = logoRows.length * dotSpacing;
+    }
+  }
+  const width = totalCols * dotSpacing;
+  const height = ROWS * dotSpacing;
   return (
-    <svg className="h-[28px] w-auto" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+    <svg className="h-[26px] w-auto" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
       <g fill="white">
         {dots.map((dot, i) => (
-          <circle key={i} cx={dot.x} cy={dot.y} r="1.3" />
+          <circle key={i} cx={dot.x} cy={dot.y} r="1.5" />
         ))}
       </g>
     </svg>
@@ -252,11 +251,11 @@ const AccountCard = ({ show, setShow, onReceiveClick, onSendClick }: { show: boo
           {show ? (
             <DotMatrixAmount amount={`$${getBalance(defaultAccount.id, defaultAccount.balance)}`} />
           ) : (
-            <WordmarkDots />
+            <HiddenBalanceDots />
           )}
           <button
             onClick={() => setShow(!show)}
-            className="w-[44px] h-[40px] rounded-[14px] bg-white/17 flex items-center justify-center hover:bg-white/25 transition-colors active:scale-95"
+            className="w-[42px] h-[38px] rounded-[12px] border border-white/45 bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors active:scale-95"
             aria-label={show ? 'លាក់ចំនួនទឹកប្រាក់' : 'បង្ហាញចំនួនទឹកប្រាក់'}
           >
             {show ? <EyeOffIconABA /> : <EyeIconABA />}
