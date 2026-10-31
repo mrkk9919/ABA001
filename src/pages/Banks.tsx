@@ -62,17 +62,21 @@ export default function Banks() {
 
         {/* Logo grid */}
         <div className="mt-4 grid grid-cols-3 gap-2.5">
-          {banks.map(([code, b]) => (
+          {banks.map(([code, b]) => {
+            const wm = b.short.slice(0, 6);
+            const fs = Math.min(10, Math.max(6, Math.floor((48 * 0.82) / (wm.length * 0.62))));
+            return (
             <div key={code} className="rounded-2xl bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] px-3 py-4 flex flex-col items-center gap-2 text-center">
               <span
-                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-[10px] font-black tracking-tight shadow-sm"
-                style={{ backgroundColor: b.color }}
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black tracking-tight shadow-sm"
+                style={{ backgroundColor: b.color, fontSize: fs }}
               >
-                {b.short.slice(0, 4)}
+                {wm}
               </span>
               <span className="text-[10.5px] font-bold text-gray-800 leading-tight">{b.name}</span>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

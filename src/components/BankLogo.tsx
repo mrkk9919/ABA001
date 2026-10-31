@@ -21,9 +21,12 @@ const BankLogo = ({
     : { color: '#374151', short: '?' };
 
   const dim = size === 'sm' ? 24 : size === 'lg' ? 40 : 28;
-  const fontSize = size === 'sm' ? 8 : size === 'lg' ? 13 : 10;
+  const baseFont = size === 'sm' ? 8 : size === 'lg' ? 13 : 10;
   const radius = size === 'sm' ? 6 : size === 'lg' ? 12 : 8;
-  const wordmark = info.short === '?' ? '?' : info.short.slice(0, 4);
+  // Use the full wordmark (capped at 6 chars) and shrink the font to fit,
+  // so PIPAY / CANADIA / SATHAPANA never get mis-truncated to PIPA / CANA.
+  const wordmark = info.short === '?' ? '?' : info.short.slice(0, 6);
+  const fontSize = Math.min(baseFont, Math.max(6, Math.floor((dim * 0.82) / (wordmark.length * 0.62))));
 
   // Slightly darker shade for the gradient bottom.
   const darken = (hex: string, f = 0.72) => {
