@@ -68,38 +68,48 @@ const NumPad = ({ onKey }: { onKey: (k: string) => void }) => (
 /* ─── Payment PIN keypad (4 digits) ──────────────────────────────────────────── */
 const PIN_KEYS = ['1','2','3','4','5','6','7','8','9'];
 
-const PinKeypad = ({ onKey }: { onKey: (k: string) => void }) => (
-  <div className="grid grid-cols-3 gap-1 px-6 pb-8">
-    {PIN_KEYS.map(d => (
-      <motion.button
-        key={d}
-        whileTap={{ scale: 0.9, backgroundColor: '#F0F0F0' }}
-        onClick={() => onKey(d)}
-        aria-label={`输入 ${d}`}
-        className="h-16 flex items-center justify-center text-[26px] font-semibold text-gray-900 rounded-2xl transition-colors active:bg-gray-100"
-      >
-        {d}
-      </motion.button>
-    ))}
-    <span className="h-16" />
-    <motion.button
-      whileTap={{ scale: 0.9, backgroundColor: '#F0F0F0' }}
-      onClick={() => onKey('0')}
-      aria-label="输入 0"
-      className="h-16 flex items-center justify-center text-[26px] font-semibold text-gray-900 rounded-2xl transition-colors active:bg-gray-100"
-    >
-      0
-    </motion.button>
-    <motion.button
-      whileTap={{ scale: 0.9 }}
-      onClick={() => onKey('⌫')}
-      aria-label="删除一位"
-      className="h-16 flex items-center justify-center text-gray-500 rounded-2xl"
-    >
-      <Delete className="w-7 h-7" strokeWidth={2} />
-    </motion.button>
-  </div>
+/* ─── Payment PIN keypad — ABA official style: white outlined circles ──────── */
+const FaceIdIcon = () => (
+  <svg viewBox="0 0 32 32" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <path d="M6 12V8a2 2 0 0 1 2-2h4M26 12V8a2 2 0 0 0-2-2h-4M6 20v4a2 2 0 0 0 2 2h4M26 20v4a2 2 0 0 1-2 2h-4" />
+    <circle cx="12.5" cy="15" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="19.5" cy="15" r="1.4" fill="currentColor" stroke="none" />
+    <path d="M13 20c1.2 1.2 2.6 1.8 3.5 1.8s2.3-.6 3.5-1.8" />
+  </svg>
 );
+
+const PinKeypad = ({ onKey }: { onKey: (k: string) => void }) => {
+  const KeyCircle = ({ label, onClick, ariaLabel }: { label: React.ReactNode; onClick: () => void; ariaLabel: string }) => (
+    <motion.button
+      whileTap={{ scale: 0.9, backgroundColor: 'rgba(255,255,255,0.18)' }}
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className="w-[72px] h-[72px] rounded-full border-2 border-white/85 flex items-center justify-center text-white text-[30px] font-semibold transition-colors"
+    >
+      {label}
+    </motion.button>
+  );
+  return (
+    <div className="flex flex-col items-center gap-4 pb-12 px-6">
+      <div className="grid grid-cols-3 gap-x-10 gap-y-4">
+        {PIN_KEYS.map(d => (
+          <KeyCircle key={d} label={d} onClick={() => onKey(d)} ariaLabel={`digit ${d}`} />
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-x-10 gap-y-4 items-center">
+        <button onClick={() => onKey('face')} aria-label="Face ID" className="w-[72px] h-[72px] flex items-center justify-center text-white/80 justify-self-center">
+          <FaceIdIcon />
+        </button>
+        <KeyCircle label="0" onClick={() => onKey('0')} ariaLabel="digit 0" />
+        <button onClick={() => onKey('⌫')} aria-label="delete digit" className="w-[72px] h-[72px] flex items-center justify-center justify-self-center">
+          <span className="bg-[#7DD3FC] rounded-2xl px-3.5 py-2.5 flex items-center justify-center">
+            <Delete className="w-6 h-6 text-[#0C4A6E]" strokeWidth={2.4} />
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 /* ─── Payment PIN verification overlay ───────────────────────────────────────── */
 const PinScreen = ({ amount, currency, onPin, onCancel, status, error, shake }: {
@@ -119,6 +129,7 @@ const PinScreen = ({ amount, currency, onPin, onCancel, status, error, shake }: 
   }, [status]);
   const handle = (k: string) => {
     if (status === 'error' || status === 'success') return;
+    if (k === 'face') return; // Face ID placeholder — no-op
     if (k === '⌫') { setPin(p => p.slice(0, -1)); return; }
     if (pin.length >= 4) return;
     const next = pin + k;
@@ -129,52 +140,49 @@ const PinScreen = ({ amount, currency, onPin, onCancel, status, error, shake }: 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 z-40 bg-white flex flex-col"
+      className="absolute inset-0 z-40 flex flex-col bg-gradient-to-b from-[#0E2A3E] via-[#143A52] to-[#0A1E2C]"
     >
-      {/* Header */}
-      <div className="bg-white px-4 pt-12 pb-4 shrink-0 shadow-[0_1px_0_rgba(0,0,0,0.06)]">
-        <div className="flex items-center gap-3 mb-1">
-          <button onClick={onCancel} className="text-gray-700 hover:text-gray-900 transition-colors" aria-label="返回金额">
-            <ArrowLeft className="w-6 h-6" strokeWidth={2.5} />
-          </button>
-          <div className="flex-1">
-            <p className="text-[17px] font-extrabold text-gray-900">Enter payment PIN</p>
-          </div>
-          <div className="flex items-center gap-1.5 bg-[#00A67E]/10 px-2.5 py-1 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-[#00A67E]" />
-            <span className="text-[10px] font-bold text-[#00A67E]">bakong</span>
-          </div>
-        </div>
+      {/* Header — cancel (បោះបង់) */}
+      <div className="px-5 pt-12 pb-2 shrink-0">
+        <button onClick={onCancel} className="text-white/90 text-[15px] font-semibold active:opacity-60" aria-label="បោះបង់">
+          បោះបង់
+        </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center items-center px-8 pb-10">
-        <div className="w-12 h-12 rounded-full bg-[#E8002D]/10 flex items-center justify-center mb-4">
-          <Lock className="w-5 h-5 text-[#E8002D]" strokeWidth={2.2} />
+      <div className="flex-1 flex flex-col items-center px-8">
+        {/* Lock icon in translucent circle + 4 dots */}
+        <div className="w-[96px] h-[96px] rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex flex-col items-center justify-center mb-5 mt-3">
+          <Lock className="w-7 h-7 text-white/90" strokeWidth={2} />
+          <div className="flex gap-1 mt-1.5">
+            {[0, 1, 2, 3].map(i => <span key={i} className="w-1 h-1 rounded-full bg-white/70" />)}
+          </div>
         </div>
-        <h2 className="text-[18px] font-extrabold text-gray-900">Confirm this transfer</h2>
-        <p className="text-[13px] text-gray-400 font-medium mt-1">
+
+        <h2 className="text-white text-[17px] font-bold tracking-wide text-center leading-snug">
+          បញ្ចូលលេខសម្ងាត់ ដើម្បីបើកចូល
+        </h2>
+        <p className="text-white/60 text-[13px] font-medium mt-1.5">
           {currency === 'KHR' ? Number(amount).toLocaleString() + ' ៛' : '$' + Number(amount).toFixed(2)}
         </p>
-        <p className="text-[12px] text-gray-500 font-semibold mt-0.5">Enter your 4-digit payment PIN</p>
 
-        {/* PIN dots */}
-        <div className={`flex items-center gap-3 mt-8 ${shake ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}>
+        {/* PIN dots — 4 large white circles (empty = bright, filled = dimmed) */}
+        <div className={`flex items-center gap-5 mt-8 ${shake ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}>
           {Array.from({ length: 4 }).map((_, i) => (
             <span
               key={i}
-              className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-150
-                ${i < pin.length ? 'bg-[#1A1F71] border-[#1A1F71]' : 'border-gray-300 bg-white'}
-                ${status === 'error' ? 'border-[#E8002D] bg-[#E8002D]/10' : ''}
-                ${status === 'success' ? 'border-[#00A67E] bg-[#00A67E]' : ''}`}
+              className={`w-[26px] h-[26px] rounded-full transition-all duration-150
+                ${i < pin.length ? 'bg-white/35' : 'bg-white'}
+                ${status === 'error' ? 'bg-[#FF6B6B]' : ''}
+                ${status === 'success' ? 'bg-[#4ADE80]' : ''}`}
             />
           ))}
         </div>
 
         <p className="h-5 mt-3 text-[12px] font-semibold text-center" aria-live="polite">
           {status === 'error'
-            ? <span className="text-[#E8002D]">{error}</span>
+            ? <span className="text-[#FF8A8A]">{error}</span>
             : status === 'success'
-              ? <span className="text-[#00A67E]">验证成功</span>
+              ? <span className="text-[#4ADE80]">ជោគជ័យ</span>
               : ''}
         </p>
       </div>
