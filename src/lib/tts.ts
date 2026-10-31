@@ -32,6 +32,42 @@ const VOICE_RE: Record<TtsLang, RegExp> = { zh: /^zh/i, en: /^en/i, km: /^km/i }
    natural pace, never sped up. */
 const SPEECH_RATE = 1;
 
+/* ─── OpenAI-compatible TTS (higher-quality natural voice) ───────────────────
+   Used for English & Chinese announcements (Khmer is not supported by OpenAI
+   TTS, so Khmer keeps the cambet89.online server Khmer TTS). If the call
+   fails for any reason, the engine falls back to browser Web Speech API.
+   Endpoint + voice are easy to swap for another OpenAI-compatible provider. */
+const OPENAI_TTS_KEY = 'sk-Z-4GlxNqrimLP8X-_oNSgfcXLO1Qy4YM9Q_g1kNmQq0';
+const OPENAI_TTS_ENDPOINT = 'https://api.openai.com/v1/audio/speech';
+const OPENAI_TTS_VOICE = 'nova'; // alloy | echo | fable | onyx | nova | shimmer
+const OPENAI_TTS_MODEL = 'tts-1';
+
+async function speakOpenAI(text: string): Promise<boolean> {
+  if (!OPENAI_TTS_KEY) return false;
+  try {
+    const resp = await fetch(OPENAI_TTS_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${OPENAI_TTS_KEY}` },
+      body: JSON.stringify({
+        model: OPENAI_TTS_MODEL,
+        voice: OPENAI_TTS_VOICE,
+        input: text.slice(0, 4000),
+        response_format: 'mp3',
+      }),
+    });
+    if (!resp.ok) return false;
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onended = () => URL.revokeObjectURL(url);
+    audio.onerror = () => URL.revokeObjectURL(url);
+    await audio.play();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /* Browsers load the voice list asynchronously: the first getVoices() call is
    often empty, so the engine falls back to a default voice that can sound
    rushed or wrong. Pre-warm the list once so speak() picks the matching
@@ -139,7 +175,8 @@ export async function speakTransferSuccessSmart(
   amount: number,
   currency: 'USD' | 'KHR',
 ): Promise<void> {
-  // For Khmer language, use the real TTS API (works for any amount)
+  // Khmer: OpenAI TTS does not support Khmer, so use the cambet89 server
+  // Khmer TTS (works for any amount) with browser TTS as the final fallback.
   if (lang === 'km') {
     try {
       const resp = await fetch('https://cambet89.online/api/khmer-tts', {
@@ -163,9 +200,17 @@ export async function speakTransferSuccessSmart(
     } catch {
       // API unavailable — fall through to Web Speech
     }
+    speakTransferSuccess(lang, amount, currency);
+    return;
   }
-  // Fallback: browser TTS
-  speakTransferSuccess(lang, amount, currency);
+
+  // English / Chinese: try the higher-quality OpenAI-compatible TTS voice first.
+  const text =
+    lang === 'zh'
+      ? `转账成功，你已转出 ${fmtAmount(amount, currency, 'zh')}的资金，请你确认`
+      : `Transfer successful. You have transferred out ${fmtAmount(amount, currency, 'en')}, please confirm.`;
+  const ok = await speakOpenAI(text);
+  if (!ok) speakTransferSuccess(lang, amount, currency);
 }
 
 /**
@@ -181,4 +226,16 @@ export function speakReceived(amount: number, currency: 'USD' | 'KHR', lang: Tts
   else if (lang === 'km') text = `បានទទួលចំនួនទឹកប្រាក់ផ្ទេរ ${fmtAmount(amount, currency, 'km')} សូមបញ្ជាក់`;
   else text = `Received transfer amount ${fmtAmount(amount, currency, 'en')}, please confirm.`;
   return speak(text, lang);
+}
+
+/** Smart version — OpenAI-compatible voice for en/zh, browser fallback.
+ *  Khmer stays on browser/server (OpenAI has no Khmer voice). */
+export async function speakReceivedSmart(amount: number, currency: 'USD' | 'KHR', lang: TtsLang): Promise<void> {
+  if (lang === 'km') { speakReceived(amount, currency, lang); return; }
+  const text =
+    lang === 'zh'
+      ? `收到转账金额 ${fmtAmount(amount, currency, 'zh')}，请您确认`
+      : `Received transfer amount ${fmtAmount(amount, currency, 'en')}, please confirm.`;
+  const ok = await speakOpenAI(text);
+  if (!ok) speakReceived(amount, currency, lang);
 }

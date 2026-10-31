@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft, Smartphone, ChevronRight, AlertTriangle, Volume2, Play } from 'lucide-react';
-import { getTtsLang, setTtsLang, speakReceived, type TtsLang } from '@/lib/tts';
+import { getTtsLang, setTtsLang, speakReceivedSmart, type TtsLang } from '@/lib/tts';
 
 /* ─── Cambodia-style temple silhouette (soft watermark) ────────────────────── */
 const AngkorPattern = () => (
@@ -164,7 +164,7 @@ export default function SettingsFeatures() {
             <button
               onClick={() => {
                 if (!ps.main) return;
-                speakReceived(5, 'USD', lang);
+                speakReceivedSmart(5, 'USD', lang).catch(() => {});
               }}
               className={`w-full py-3.5 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-[14px] transition-colors ${ps.main ? 'bg-[#7B4FE8] text-white shadow-[0_6px_16px_rgba(123,79,232,0.35)] active:scale-[0.98]' : 'bg-gray-100 text-gray-400'}`}
             >
