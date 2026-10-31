@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft, Smartphone, ChevronRight, AlertTriangle, Volume2, Play } from 'lucide-react';
-import { getTtsLang, speakReceived, type TtsLang } from '@/lib/tts';
+import { getTtsLang, setTtsLang, speakReceived, type TtsLang } from '@/lib/tts';
 
 /* ─── Cambodia-style temple silhouette (soft watermark) ────────────────────── */
 const AngkorPattern = () => (
@@ -44,6 +44,7 @@ const Toggle = ({ on, onClick }: { on: boolean; onClick: () => void }) => (
 export default function SettingsFeatures() {
   const [, setLocation] = useLocation();
   const [ps, setPs] = useState<PaySound>(load);
+  const [lang, setLang] = useState<TtsLang>(() => getTtsLang());
   const save = (next: PaySound) => {
     setPs(next);
     try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch { /* ignore */ }
@@ -134,12 +135,36 @@ export default function SettingsFeatures() {
             ))}
           </div>
 
+          {/* Voice language selector — Khmer (ខ្មែរ) in the middle, default */}
+          <div className="px-5 pb-4 pt-1">
+            <p className="text-[12px] font-bold text-gray-700 mb-2">ភាសាសំឡេង · Voice Language</p>
+            <div className="flex rounded-xl bg-gray-100 p-1">
+              {([
+                { code: 'zh', label: '中文' },
+                { code: 'km', label: 'ខ្មែរ' },
+                { code: 'en', label: 'English' },
+              ] as { code: TtsLang; label: string }[]).map(({ code, label }) => (
+                <button
+                  key={code}
+                  onClick={() => { setLang(code); setTtsLang(code); }}
+                  className={`flex-1 py-2 rounded-lg text-[13px] font-bold transition-all active:scale-95 ${
+                    lang === code ? 'bg-[#7B4FE8] text-white shadow' : 'text-gray-500'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-center text-[10.5px] text-gray-400">
+              ជ្រើសភាសាសម្រាប់សំឡេង PaySound · ខ្មែរ ប្រើសេវា TTS របស់ម៉ាស៊ីនមេ
+            </p>
+          </div>
           {/* Test incoming payment voice */}
           <div className="px-5 pb-5 pt-1">
             <button
               onClick={() => {
                 if (!ps.main) return;
-                speakReceived(5, 'USD', getTtsLang() as TtsLang);
+                speakReceived(5, 'USD', lang);
               }}
               className={`w-full py-3.5 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-[14px] transition-colors ${ps.main ? 'bg-[#7B4FE8] text-white shadow-[0_6px_16px_rgba(123,79,232,0.35)] active:scale-[0.98]' : 'bg-gray-100 text-gray-400'}`}
             >

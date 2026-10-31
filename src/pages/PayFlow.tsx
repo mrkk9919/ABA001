@@ -6,6 +6,7 @@ import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
 import { addTxn } from '@/lib/txnStore';
 import { deductBalance } from '@/lib/balanceStore';
 import { BANK_MAP } from '@/lib/khqr';
+import { getTtsLang, speakTransferSuccessSmart } from '@/lib/tts';
 
 type Step = 'amount' | 'processing' | 'success';
 type Currency = 'USD' | 'KHR';
@@ -421,6 +422,9 @@ export default function PayFlow() {
             note: note || undefined,
           });
           deductBalance(accounts[fromIdx % accounts.length].id, Number(amountStr || '0.01'));
+          // Paysong voice announcement — plays in the user's selected language
+          // (ខ្មែរ / 中文 / English); Khmer uses the server TTS API when reachable.
+          speakTransferSuccessSmart(getTtsLang(), Number(amountStr || '0.01'), currency).catch(() => {});
         } catch { /* storage unavailable */ }
       }
     }
