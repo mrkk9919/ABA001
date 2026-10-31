@@ -5,6 +5,7 @@ import { accounts } from '@/data/accounts';
 import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
 import { addTxn } from '@/lib/txnStore';
 import { deductBalance } from '@/lib/balanceStore';
+import { BANK_MAP } from '@/lib/khqr';
 
 type Step = 'amount' | 'processing' | 'success';
 type Currency = 'USD' | 'KHR';
@@ -351,11 +352,12 @@ const NoteModal = ({ value, onChange, onClose }: { value: string; onChange: (v: 
 export default function PayFlow() {
   const pending = getPendingTransfer();
   const pd = pending?.data as any;
-  const payeeName = pd?.name || 'THOEURN SAROEUN';
-  const bankName = pd?.bank?.name || 'MB BANK (CAMBODIA) PLC';
-  const bankColor = pd?.bank?.color || '#005BAA';
-  const payeeAccount = pd?.account || pd?.bakongId || '600980842';
-  _badge.short = pd?.bank?.short || 'MB';
+  const payeeName = pd?.merchantName || 'THOEURN SAROEUN';
+  const bankName = pd?.bankName || 'MB BANK (CAMBODIA) PLC';
+  const bankColor = pd?.bankColor || '#005BAA';
+  const payeeAccount = pd?.accountNumber || pd?.bakongId || '600980842';
+  const bankShort = (pd?.bankCode && (BANK_MAP as any)[pd.bankCode]?.short) || bankName.split(' ').filter(Boolean)[0]?.slice(0, 4).toUpperCase() || 'MB';
+  _badge.short = bankShort;
   _badge.color = bankColor;
 
   const [step, setStep] = useState<Step>('amount');
