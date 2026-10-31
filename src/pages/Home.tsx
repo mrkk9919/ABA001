@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'wouter';
 import {
@@ -8,6 +8,11 @@ import {
 } from 'lucide-react';
 import { defaultAccount } from '../data/accounts';
 import { getBalance } from '../lib/balanceStore';
+import promo0 from '@/assets/promo_0.webp';
+import promo1 from '@/assets/promo_1.webp';
+import promo2 from '@/assets/promo_2.webp';
+import promo3 from '@/assets/promo_3.webp';
+const PROMO_IMAGES = [promo0, promo1, promo2, promo3];
 
 /* ─── Grey/white cartoon cat avatar (Tom style) ─────────────────────────────── */
 const TomCatAvatar = () => (
@@ -397,25 +402,42 @@ const ScrollPills = () => {
   );
 };
 
-/* ─── News & Promotion Banner (CSS gradient) ───────────────────────────────── */
-const NewsBanner = () => (
-  <div className="relative h-[140px] rounded-2xl overflow-hidden shadow-md bg-gradient-to-br from-[#E8002D] via-[#C80024] to-[#9B001C]">
-    <div className="absolute inset-0 flex flex-col justify-center px-5">
-      <span className="text-white/80 text-xs font-medium mb-1">Special Offer</span>
-      <span className="text-white text-xl font-bold leading-tight">ABA Loan</span>
-      <span className="text-white/90 text-sm mt-1">Personal loan from 6.5% p.a.</span>
-    </div>
-    {/* Decorative circle */}
-    <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10" />
-    <div className="absolute -right-4 bottom-0 w-20 h-20 rounded-full bg-white/5" />
-    {/* Dots indicator */}
-    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-      {[0, 1, 2].map(i => (
-        <span key={i} className={`h-1 rounded-full ${i === 0 ? 'w-4 bg-white' : 'w-1.5 bg-white/40'}`} />
+/* ─── News & Promotion Banner — image carousel (auto-rotate every 5s) ──────── */
+const NewsBanner = () => {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % PROMO_IMAGES.length), 5000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="relative h-[140px] rounded-2xl overflow-hidden shadow-md bg-gray-100">
+      {PROMO_IMAGES.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt={`News & Promotion ${i + 1}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+            i === idx ? 'opacity-100' : 'opacity-0'
+          }`}
+          draggable={false}
+        />
       ))}
+      {/* Dots indicator (clickable) */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+        {PROMO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIdx(i)}
+            aria-label={`promo ${i + 1}`}
+            className={`h-1 rounded-full transition-all duration-300 ${
+              i === idx ? 'w-4 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'
+            }`}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ─── Mini App custom SVG icons ─────────────────────────────────────────────── */
 const MetfoneIcon = () => (
