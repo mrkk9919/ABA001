@@ -468,7 +468,7 @@ export default function Scanner() {
     if (!result) return;
     setPendingTransfer(result.data, lastRaw);
     setResult(null);
-    setLocation('/transfer');
+    setLocation('/pay');
   };
 
   const handleClose = () => {

@@ -8,6 +8,7 @@ import Accounts from '@/pages/Accounts';
 import AccountDetail from '@/pages/AccountDetail';
 import TransactionDetail from '@/pages/TransactionDetail';
 import Scanner from '@/pages/Scanner';
+import PayFlow from '@/pages/PayFlow';
 import TransferHub from '@/pages/TransferHub';
 import Transfer from '@/pages/Transfer';
 import Cards from '@/pages/Cards';
@@ -30,6 +31,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/scan" component={Scanner} />
+      <Route path="/pay" component={PayFlow} />
       <Route path="/transfer" component={TransferHub} />
       <Route path="/transfer/send" component={Transfer} />
       <Route path="/accounts" component={Accounts} />
