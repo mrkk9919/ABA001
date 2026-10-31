@@ -369,14 +369,19 @@ export default function Scanner() {
   }, []);
 
   /* ── jsQR decode loop ── */
+  // After a successful read we STOP the camera loop and show the recipient
+  // confirmation sheet (ResultSheet). The user reviews the payee, then taps
+  // "Transfer" → PayFlow. This guarantees the scanned recipient is displayed.
   const handleQRString = useCallback((raw: string) => {
     if (scannedRef.current) return;
     const res = parseKHQRDetail(raw);
     if (res.ok) {
       scannedRef.current = true;
+      cancelAnimationFrame(rafRef.current);
       setPulse(true);
       setTimeout(() => setPulse(false), 500);
-      setTimeout(() => { setLastRaw(raw); setPendingTransfer(res.data, raw); setLocation('/pay'); }, 250);
+      setLastRaw(raw);
+      setResult({ data: res.data, verified: true });
       return;
     }
     // Strict verification failed → still try to read what is in the QR,
@@ -385,9 +390,11 @@ export default function Scanner() {
     const lenData = len.data;
     if (lenData) {
       scannedRef.current = true;
+      cancelAnimationFrame(rafRef.current);
       setPulse(true);
       setTimeout(() => setPulse(false), 500);
-      setTimeout(() => { setLastRaw(raw); setPendingTransfer(lenData, raw); setLocation('/pay'); }, 250);
+      setLastRaw(raw);
+      setResult({ data: lenData, verified: false, reason: res.reason });
       return;
     }
     if (res.reason === 'crc')        showToast('error', 'QR is corrupted (CRC check failed)');
@@ -428,12 +435,17 @@ export default function Scanner() {
       setPulse(true); setTimeout(() => setPulse(false), 500);
       if (code) {
         const res = parseKHQRDetail(code.data);
-        if (res.ok) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setPendingTransfer(res.data, code.data); setLocation('/pay'); }, 250); }
-        else {
+        if (res.ok) {
+          scannedRef.current = true; cancelAnimationFrame(rafRef.current);
+          setLastRaw(code.data); setResult({ data: res.data, verified: true });
+        } else {
           // Failed verification → still surface readable info, flagged unverified.
           const len = parseKHQRLenient(code.data);
           const lenData = len.data;
-          if (lenData) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setPendingTransfer(lenData, code.data); setLocation('/pay'); }, 250); }
+          if (lenData) {
+            scannedRef.current = true; cancelAnimationFrame(rafRef.current);
+            setLastRaw(code.data); setResult({ data: lenData, verified: false, reason: res.reason });
+          }
           else if (res.reason === 'not-bakong') showToast('error', 'QR is not a Bakong / KHQR code');
           else if (res.reason === 'crc')        showToast('error', 'QR is corrupted (CRC check failed)');
           else                                  showToast('error', 'Unreadable QR code');
@@ -451,7 +463,12 @@ export default function Scanner() {
     demoIdx++;
     setPulse(true); setTimeout(() => setPulse(false), 500);
     const res = parseKHQRDetail(entry.qr);
-    if (res.ok) setTimeout(() => { scannedRef.current = true; setLastRaw(entry.qr); setPendingTransfer(res.data, entry.qr); setLocation('/pay'); }, 300);
+    if (res.ok) {
+      scannedRef.current = true; cancelAnimationFrame(rafRef.current);
+      setLastRaw(entry.qr);
+      setResult({ data: res.data, verified: true });
+      showToast('success', `Demo: ${entry.label.split('–')[0].trim()}`, 1500);
+    }
   };
 
   /* ── Torch ── */
@@ -574,6 +591,16 @@ export default function Scanner() {
           </div>
 
           <PaymentLogos />
+          {/* Demo / test scan button — cycles through real Bakong demo recipients
+              so the scan→recipient→transfer flow can be verified without a camera. */}
+          <div className="flex justify-center pt-1">
+            <button
+              onClick={handleDemo}
+              className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/60 text-[11px] font-bold hover:bg-white/20 active:scale-95 transition-all"
+            >
+              សាកល្បងស្កែន · Demo
+            </button>
+          </div>
         </div>
 
         {/* ── Result sheet ── */}

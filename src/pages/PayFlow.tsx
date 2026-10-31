@@ -10,21 +10,26 @@ import { BANK_MAP } from '@/lib/khqr';
 type Step = 'amount' | 'processing' | 'success';
 type Currency = 'USD' | 'KHR';
 
-/* Dynamic bank badge (set from scanned QR at page root) */
-const _badge = { short: 'MB', color: '#005BAA' };
-
 const DARK_TEAL: React.CSSProperties = {
   background: 'linear-gradient(165deg, #164654 0%, #0C2A33 55%, #071A21 100%)',
 };
 
 /* Bank badge — wordmark comes from scanned QR bank info */
-const BankBadge = ({ size = 64 }: { size?: number }) => (
+const BankBadge = ({
+  size = 64,
+  short = 'MB',
+  color = '#005BAA',
+}: {
+  size?: number;
+  short?: string;
+  color?: string;
+}) => (
   <div
     className="rounded-full bg-white flex items-center justify-center shadow-lg"
     style={{ width: size, height: size }}
   >
-    <span style={{ color: _badge.color, fontWeight: 900, fontSize: size * 0.28, letterSpacing: '-0.5px' }}>
-      {_badge.short.slice(0, 6)}
+    <span style={{ color, fontWeight: 900, fontSize: size * 0.28, letterSpacing: '-0.5px' }}>
+      {short.slice(0, 6)}
     </span>
   </div>
 );
@@ -33,6 +38,9 @@ const BankBadge = ({ size = 64 }: { size?: number }) => (
 const AmountScreen = ({
   payeeName,
   bankName,
+  bankShort,
+  bankColor,
+  payeeAccount,
   currency,
   setCurrency,
   amountStr,
@@ -44,6 +52,9 @@ const AmountScreen = ({
 }: {
   payeeName: string;
   bankName: string;
+  bankShort: string;
+  bankColor: string;
+  payeeAccount: string;
   currency: Currency;
   setCurrency: (c: Currency) => void;
   amountStr: string;
@@ -100,9 +111,12 @@ const AmountScreen = ({
 
       {/* Payee */}
       <div className="flex flex-col items-center pt-2 pb-4">
-        <BankBadge size={72} />
+        <BankBadge size={72} short={bankShort} color={bankColor} />
         <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
         <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
+        {payeeAccount && (
+          <p className="mt-1 text-[10px] text-white/35 font-mono tracking-wide">{payeeAccount}</p>
+        )}
       </div>
 
       {/* Currency toggle */}
@@ -180,10 +194,20 @@ const AmountScreen = ({
 };
 
 /* ─── Processing screen (loading dots) ────────────────────────────────────── */
-const ProcessingScreen = ({ payeeName, bankName }: { payeeName: string; bankName: string }) => (
+const ProcessingScreen = ({
+  payeeName,
+  bankName,
+  bankShort,
+  bankColor,
+}: {
+  payeeName: string;
+  bankName: string;
+  bankShort: string;
+  bankColor: string;
+}) => (
   <div className="min-h-[100dvh] flex flex-col items-center text-white" style={DARK_TEAL}>
     <div className="flex flex-col items-center pt-24">
-      <BankBadge size={72} />
+      <BankBadge size={72} short={bankShort} color={bankColor} />
       <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
       <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
     </div>
@@ -210,12 +234,16 @@ const SuccessScreen = ({
   currency,
   payeeName,
   bankName,
+  bankShort,
+  bankColor,
   fromNumber,
 }: {
   amount: string;
   currency: Currency;
   payeeName: string;
   bankName: string;
+  bankShort: string;
+  bankColor: string;
   fromNumber: string;
 }) => {
   const [, setLocation] = useLocation();
@@ -255,7 +283,7 @@ const SuccessScreen = ({
       <div className="w-full max-w-[360px] mt-5 bg-white rounded-[22px] shadow-xl overflow-hidden">
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center gap-3">
-            <BankBadge size={40} />
+            <BankBadge size={40} short={bankShort} color={bankColor} />
             <div>
               <p className="text-[24px] font-extrabold text-gray-900 leading-none">{amt}</p>
               <p className="text-[14px] font-semibold text-gray-600 mt-1">{payeeName}</p>
@@ -355,14 +383,15 @@ export default function PayFlow() {
   const payeeName = pd?.merchantName || 'THOEURN SAROEUN';
   const bankName = pd?.bankName || 'MB BANK (CAMBODIA) PLC';
   const bankColor = pd?.bankColor || '#005BAA';
-  const payeeAccount = pd?.accountNumber || pd?.bakongId || '600980842';
+  const payeeAccount = pd?.accountNumber || pd?.bakongId || '';
   const bankShort = (pd?.bankCode && (BANK_MAP as any)[pd.bankCode]?.short) || bankName.split(' ').filter(Boolean)[0]?.slice(0, 4).toUpperCase() || 'MB';
-  _badge.short = bankShort;
-  _badge.color = bankColor;
+  // Pre-fill from the scanned QR: dynamic QRs carry an amount + currency.
+  const initialAmount = pd?.amount ? String(pd.amount) : '';
+  const initialCurrency: Currency = pd?.currency === 'KHR' ? 'KHR' : 'USD';
 
   const [step, setStep] = useState<Step>('amount');
-  const [currency, setCurrency] = useState<Currency>('USD');
-  const [amountStr, setAmountStr] = useState('');
+  const [currency, setCurrency] = useState<Currency>(initialCurrency);
+  const [amountStr, setAmountStr] = useState(initialAmount);
   const [fromIdx, setFromIdx] = useState(0);
   const [note, setNote] = useState('');
   const [showNote, setShowNote] = useState(false);
@@ -397,7 +426,8 @@ export default function PayFlow() {
     }
   }, [step]);
 
-  if (step === 'processing') return <ProcessingScreen payeeName={payeeName} bankName={bankName} />;
+  if (step === 'processing')
+    return <ProcessingScreen payeeName={payeeName} bankName={bankName} bankShort={bankShort} bankColor={bankColor} />;
   if (step === 'success')
     return (
       <SuccessScreen
@@ -405,6 +435,8 @@ export default function PayFlow() {
         currency={currency}
         payeeName={payeeName}
         bankName={bankName}
+        bankShort={bankShort}
+        bankColor={bankColor}
         fromNumber={accounts[fromIdx % accounts.length].number}
       />
     );
@@ -414,6 +446,9 @@ export default function PayFlow() {
       <AmountScreen
         payeeName={payeeName}
         bankName={bankName}
+        bankShort={bankShort}
+        bankColor={bankColor}
+        payeeAccount={payeeAccount}
         currency={currency}
         setCurrency={setCurrency}
         amountStr={amountStr}
