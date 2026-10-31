@@ -105,27 +105,18 @@ const TopHeader = () => {
 
 /* ─── Dotted Action Icon (from ABA official design) ─────────────────────────── */
 const DottedActionIcon = ({ kind }: { kind: 'receive' | 'send' | 'chart' }) => {
-  const dots = [];
-  for (let row = 0; row < 11; row += 1) {
-    for (let col = 0; col < 11; col += 1) {
-      const x = 18 + (col - 5) * 2.65;
-      const y = 18 + (row - 5) * 2.65;
-      if ((x - 18) ** 2 + (y - 18) ** 2 <= 17 ** 2) {
-        dots.push(<circle key={`${col}-${row}`} cx={x} cy={y} r="1.05" />);
-      }
-    }
-  }
+  // ABA official style: solid white circle with a red icon inside.
   return (
     <svg className="w-[30px] h-[30px]" viewBox="0 0 36 36" aria-hidden="true">
-      <g fill="white">{dots}</g>
+      <circle cx="18" cy="18" r="14" fill="white" />
       {kind === 'receive' && (
-        <path d="M11 23.5 22.7 11l2.8 2.6-11.8 12.2H11zM12.4 25.8l1.2-3.1 2.2 2.1z" fill="white" />
+        <path d="M11 23.5 22.7 11l2.8 2.6-11.8 12.2H11zM12.4 25.8l1.2-3.1 2.2 2.1z" fill="#E8002D" />
       )}
       {kind === 'send' && (
-        <path d="m11 24 13.5-12.5m-6.4.4 6.6-.6-.7 6.5" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="m11 24 13.5-12.5m-6.4.4 6.6-.6-.7 6.5" fill="none" stroke="#E8002D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       )}
       {kind === 'chart' && (
-        <g fill="white">
+        <g fill="#E8002D">
           <rect x="10.5" y="19" width="3" height="7" rx=".5" />
           <rect x="16.5" y="14" width="3" height="12" rx=".5" />
           <rect x="22.5" y="10" width="3" height="16" rx=".5" />
@@ -293,7 +284,7 @@ const AccountCard = ({ show, setShow, onReceiveClick, onSendClick }: { show: boo
                 <DottedActionIcon kind={btn.kind} />
                 <span className="text-[12.5px] font-bold text-white">{btn.label}</span>
               </button>
-              {i === 1 && <div className="w-[1px] h-6 bg-white/25" />}
+              {i < 2 && <div className="w-[1px] h-6 bg-white/25" />}
             </React.Fragment>
           ))}
         </div>
