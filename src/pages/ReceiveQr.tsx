@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import { accounts } from '@/data/accounts';
 import personalQr from '@/assets/aba-personal-qr.png';
+import SupportPaymentLogos from '@/assets/support-payment-logos.png';
 
 type TabId = 'home' | 'qr' | 'transfer' | 'sound';
 type AccountId = 'account' | 'phone';
@@ -166,6 +167,17 @@ export default function ReceiveQr() {
         </button>
 
         {/* Account details */}
+        {/* Support payment badges (KHQR + ATM MBCambodia) */}
+        <div className="w-full max-w-[340px] mx-auto mt-4 flex flex-col items-center gap-2">
+          <p className="text-[12px] text-gray-500 font-medium tracking-wide">Support payment:</p>
+          <img
+            src={SupportPaymentLogos}
+            alt="Supported payments: KHQR and ATM MBCambodia"
+            className="h-9 w-auto object-contain"
+            draggable={false}
+          />
+        </div>
+
         <section className="w-full max-w-[340px] mx-auto mt-[9px]" aria-label="Account information">
           {accountList.map((account) => (
             <div key={account.id} className="border-b border-[#e2e3e3] last:border-b-0">

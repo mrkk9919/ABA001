@@ -599,11 +599,12 @@ const ReceiveOptionsSheet = ({ open, onClose }: { open: boolean; onClose: () => 
             onClick={onClose}
           />
           <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[24px] z-50 pb-8 shadow-2xl"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.94 }}
+            transition={{ type: 'spring', damping: 26, stiffness: 320 }}
+            style={{ x: '-50%', y: '-50%' }}
+            className="absolute left-1/2 top-1/2 w-[92%] max-w-[340px] max-h-[85%] overflow-y-auto hide-scrollbar bg-white rounded-[24px] z-50 pb-6 shadow-2xl"
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-2">
@@ -912,7 +913,7 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] md:h-screen md:min-h-screen bg-gray-300 flex items-center justify-center md:p-4 font-sans select-none">
-      <div className="w-full h-full md:max-w-[390px] md:h-[844px] bg-[#F3F2F7] md:rounded-[2.5rem] shadow-2xl relative overflow-hidden md:border-[8px] border-black flex flex-col">
+      <div className="w-full h-[100dvh] md:h-[844px] md:max-w-[390px] bg-[#F3F2F7] md:rounded-[2.5rem] shadow-2xl relative overflow-hidden md:border-[8px] border-black flex flex-col">
 
         <div className="relative flex-1 overflow-y-auto hide-scrollbar z-10 pb-28">
           <TopHeader />

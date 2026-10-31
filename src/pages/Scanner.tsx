@@ -494,8 +494,8 @@ export default function Scanner() {
 
         {/* ── Header ── */}
         <div className="relative z-20 flex items-center justify-center pt-14 pb-3 px-5 shrink-0">
-          <p className="text-white font-extrabold text-[18px] tracking-wide">
-            ABA<span className="text-[#E8002D] font-black">·</span>Scan
+          <p className="text-white font-extrabold text-[18px] tracking-wide flex items-center gap-1.5">
+            ABA<span className="inline-block w-2 h-2 rounded-full bg-[#E8002D]" />ស្កែន
           </p>
           <button onClick={() => setLocation('/')} className="absolute right-5 top-6 text-white hover:text-white/70">
             <X className="w-6 h-6" strokeWidth={2.5} />
@@ -510,7 +510,7 @@ export default function Scanner() {
           <motion.div
             animate={pulse ? { scale: 1.05 } : { scale: 1 }}
             transition={{ duration: 0.25 }}
-            className="relative w-[240px] h-[240px]"
+            className="relative w-[280px] h-[280px]"
             style={{ boxShadow: '0 0 0 2000px rgba(0,0,0,0.42)' }}
           >
             {/* Corner brackets */}
@@ -543,40 +543,37 @@ export default function Scanner() {
         </div>
 
         {/* ── Bottom panel ── */}
-        <div className="relative z-20 bg-[#F2F3F5] shrink-0 rounded-t-[20px] shadow-[0_-4px_20px_rgba(0,0,0,0.28)]">
-          <div className="max-h-[46%] overflow-y-auto hide-scrollbar pt-4 px-4 pb-6 space-y-4">
-            <div className="flex gap-3">
-              {/* Flash */}
-              <button
-                onClick={toggleTorch}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-full font-bold text-[14px] transition-all
-                  ${torchOn ? 'bg-yellow-400 text-black' : 'bg-[#1C1C1E] text-white hover:bg-[#333]'}`}
-              >
-                <svg viewBox="0 0 24 24" fill={torchOn ? 'black' : 'white'} className="w-5 h-5">
-                  <path d="M9 2h6l-1 7h2l-4 13-4-13h2L9 2z" />
-                </svg>
-                Flash
-              </button>
+        {/* ── Floating controls over camera (official ABA style) ── */}
+        <div className="relative z-20 shrink-0 px-5 pb-10 pt-4 space-y-5 bg-gradient-to-t from-black/80 via-black/45 to-transparent">
+          <div className="flex justify-center gap-3">
+            {/* Flash (ពិល) */}
+            <button
+              onClick={toggleTorch}
+              className={`flex items-center gap-2 px-7 py-3 rounded-full font-bold text-[14px] transition-all backdrop-blur-md
+                ${torchOn ? 'bg-yellow-400/90 text-black' : 'bg-white/15 text-white hover:bg-white/25'}`}
+            >
+              <svg viewBox="0 0 24 24" fill={torchOn ? 'black' : 'white'} className="w-5 h-5">
+                <path d="M9 2h6l-1 7h2l-4 13-4-13h2L9 2z" />
+              </svg>
+              ពិល
+            </button>
 
-              {/* Upload QR */}
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="flex-1 flex items-center justify-center gap-2.5 py-3 rounded-full bg-[#1C1C1E] text-white font-bold text-[14px] hover:bg-[#333] transition-colors active:scale-95"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-5 h-5">
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                  <path d="M14 14h3M14 17.5v3M17.5 14v3M20.5 17.5h.5M20.5 20.5h.5" strokeLinecap="round" />
-                </svg>
-                Upload QR
-              </button>
-            </div>
-
-            <ScanFeatureStrips />
-
-            <PaymentLogos />
+            {/* Open QR from gallery (បើក QR) */}
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-2 px-7 py-3 rounded-full bg-white/15 backdrop-blur-md text-white font-bold text-[14px] hover:bg-white/25 transition-colors active:scale-95"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-5 h-5">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <path d="M14 14h3M14 17.5v3M17.5 14v3M20.5 17.5h.5M20.5 20.5h.5" strokeLinecap="round" />
+              </svg>
+              បើក QR
+            </button>
           </div>
+
+          <PaymentLogos />
         </div>
 
         {/* ── Result sheet ── */}
