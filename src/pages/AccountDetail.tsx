@@ -29,48 +29,104 @@ type DateGroup = { date: string; items: Transaction[] };
 
 /* ── Static statement data by date (USD) ── */
 const usdByDate: DateGroup[] = [
-  {
-    date: '11 តុលា 2026',
-    items: [
-      { id: 1, name: 'RUN SOHENG', amount: '-0.60', type: 'debit', avatarKind: 'khqr', avatarColor: '#E8002D' },
-      { id: 2, name: 'EZ Today001', amount: '-10.00', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A' },
-      { id: 3, name: 'KH GAME TOPUP 54', amount: '-10.00', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A' },
-      { id: 4, name: 'LEAH SEAN', amount: '+20.00', type: 'credit', avatarKind: 'initials', initials: 'LS', avatarColor: '#2563EB', badge: 'check' },
-      { id: 5, name: 'NOCH PANHANAPISETH AND SOEU YUKHEANG', amount: '-65.00', type: 'debit', avatarKind: 'initials', initials: 'NY', avatarColor: '#7C3AED', badge: 'question' },
-    ],
-  },
-  {
-    date: '10 តុលា 2026',
-    items: [
-      { id: 6, name: 'LEAH SEAN', amount: '+20.00', type: 'credit', avatarKind: 'initials', initials: 'LS', avatarColor: '#2563EB', badge: 'check' },
-      { id: 7, name: 'AM MAHEDY', amount: '-5.00', type: 'debit', avatarKind: 'khqr', avatarColor: '#E8002D' },
-      { id: 8, name: 'LEAH SEAN', amount: '+50.00', type: 'credit', avatarKind: 'initials', initials: 'LS', avatarColor: '#2563EB', badge: 'check' },
-    ],
-  },
-  {
-    date: '09 តុលា 2026',
-    items: [
-      { id: 9, name: 'kucoin.com.,Warsaw,PL', amount: '-10.00', type: 'debit', avatarKind: 'document', avatarColor: '#E5E7EB' },
-      { id: 10, name: 'BanxaOSL BANXA,Amsterd', amount: '-10.00', type: 'debit', avatarKind: 'document', avatarColor: '#E5E7EB' },
-    ],
-  },
-  {
-    date: '08 តុលា 2026',
-    items: [
-      { id: 11, name: 'WING BANK', amount: '+20.00', type: 'credit', avatarKind: 'store', avatarColor: '#D97706' },
-      { id: 12, name: 'PHONE RECHARGE', amount: '-2.00', type: 'debit', avatarKind: 'initials', initials: 'PR', avatarColor: '#DC2626', badge: 'check' },
-      { id: 13, name: 'CHAN VEASNA', amount: '+5.00', type: 'credit', avatarKind: 'initials', initials: 'CV', avatarColor: '#2563EB', badge: 'check' },
-      { id: 14, name: 'Nisai Media', amount: '-1.00', type: 'debit', avatarKind: 'khqr', avatarColor: '#E8002D' },
-    ],
-  },
-  {
-    date: '07 តុលា 2026',
-    items: [
-      { id: 15, name: 'HUAXING BANK CO.,LTD', amount: '-6.06', type: 'debit', avatarKind: 'store', avatarColor: '#3B82F6' },
-      { id: 16, name: 'LAY THAVY', amount: '-10.00', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A' },
-      { id: 17, name: 'SOM SOPHEAN', amount: '-1.49', type: 'debit', avatarKind: 'initials', initials: 'SS', avatarColor: '#16A34A', badge: 'check' },
-    ],
-  },
+  { date: '31 តុលា 2026', items: [
+    { id: 1, name: 'LEAH SEAN', amount: '+161.89', type: 'credit', avatarKind: 'initials', initials: 'LS', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '30 តុលា 2026', items: [
+    { id: 2, name: 'Foodpanda', amount: '-230.84', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 3, name: 'KH GAME TOPUP 54', amount: '-16.46', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 4, name: 'Bakong Transfer', amount: '+1659.50', type: 'credit', avatarKind: 'initials', initials: 'BT', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '29 តុលា 2026', items: [
+    { id: 5, name: 'CHAN VEASNA', amount: '+4918.85', type: 'credit', avatarKind: 'initials', initials: 'CV', avatarColor: '#2563EB', badge: 'check' },
+    { id: 6, name: 'Lucky Supermarket', amount: '-72.57', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '28 តុលា 2026', items: [
+    { id: 7, name: 'AEON Mall', amount: '-8.37', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 8, name: 'WING BANK', amount: '+86.11', type: 'credit', avatarKind: 'initials', initials: 'WB', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '27 តុលា 2026', items: [
+    { id: 9, name: 'TELA Telecom', amount: '-165.72', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '26 តុលា 2026', items: [
+    { id: 10, name: 'NOCH PANHA', amount: '+4623.43', type: 'credit', avatarKind: 'initials', initials: 'NP', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '25 តុលា 2026', items: [
+    { id: 11, name: 'Grab Cambodia', amount: '-10.44', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 12, name: 'Grab Cambodia', amount: '-48.76', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '24 តុលា 2026', items: [
+    { id: 13, name: 'Visa Annual Fee', amount: '-133.18', type: 'debit', avatarKind: 'initials', initials: 'VA', avatarColor: '#7C3AED', badge: 'question' },
+    { id: 14, name: 'Metfone Internet', amount: '-92.31', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 15, name: 'CFE អគ្គិសនី', amount: '-13.59', type: 'debit', avatarKind: 'initials', initials: 'Cអ', avatarColor: '#7C3AED', badge: 'question' },
+    { id: 16, name: 'Cambodia Post', amount: '-175.91', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '22 តុលា 2026', items: [
+    { id: 17, name: 'AM MAHEDY', amount: '-191.95', type: 'debit', avatarKind: 'initials', initials: 'AM', avatarColor: '#7C3AED', badge: 'question' },
+    { id: 18, name: 'PHONG SREYNET', amount: '+109.28', type: 'credit', avatarKind: 'initials', initials: 'PS', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '21 តុលា 2026', items: [
+    { id: 19, name: 'PHONE RECHARGE', amount: '-280.82', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '19 តុលា 2026', items: [
+    { id: 20, name: 'TELA Telecom', amount: '-171.65', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 21, name: 'SOK KIMHENG', amount: '+2758.13', type: 'credit', avatarKind: 'initials', initials: 'SK', avatarColor: '#2563EB', badge: 'check' },
+    { id: 22, name: 'LEAH SEAN', amount: '+1859.32', type: 'credit', avatarKind: 'initials', initials: 'LS', avatarColor: '#2563EB', badge: 'check' },
+    { id: 23, name: 'RUN SOHENG', amount: '-8.99', type: 'debit', avatarKind: 'initials', initials: 'RS', avatarColor: '#7C3AED', badge: 'check' },
+  ] },
+  { date: '17 តុលា 2026', items: [
+    { id: 24, name: 'Foodpanda', amount: '-43.25', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 25, name: 'Nisai Media', amount: '-35.87', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '16 តុលា 2026', items: [
+    { id: 26, name: 'MENG HOUR', amount: '+1653.16', type: 'credit', avatarKind: 'initials', initials: 'MH', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '14 តុលា 2026', items: [
+    { id: 27, name: 'Nisai Media', amount: '-239.69', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '13 តុលា 2026', items: [
+    { id: 28, name: 'Makro Cambodia', amount: '-21.64', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 29, name: 'MENG HOUR', amount: '+2720.37', type: 'credit', avatarKind: 'initials', initials: 'MH', avatarColor: '#2563EB', badge: 'check' },
+    { id: 30, name: 'Wing Cash In', amount: '+1772.10', type: 'credit', avatarKind: 'initials', initials: 'WC', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '12 តុលា 2026', items: [
+    { id: 31, name: 'PHONE RECHARGE', amount: '-13.29', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 32, name: 'WING BANK', amount: '+225.74', type: 'credit', avatarKind: 'initials', initials: 'WB', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '10 តុលា 2026', items: [
+    { id: 33, name: 'AM MAHEDY', amount: '-14.72', type: 'debit', avatarKind: 'initials', initials: 'AM', avatarColor: '#7C3AED', badge: 'question' },
+  ] },
+  { date: '8 តុលា 2026', items: [
+    { id: 34, name: 'RUN SOHENG', amount: '-182.26', type: 'debit', avatarKind: 'initials', initials: 'RS', avatarColor: '#7C3AED', badge: 'check' },
+    { id: 35, name: 'Prince Supermarket', amount: '-135.76', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 36, name: 'THIDA SOK', amount: '+1496.11', type: 'credit', avatarKind: 'initials', initials: 'TS', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '7 តុលា 2026', items: [
+    { id: 37, name: 'Makro Cambodia', amount: '-462.94', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '6 តុលា 2026', items: [
+    { id: 38, name: 'Caltex Cambodia', amount: '-448.96', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 39, name: 'ABA Bank Fee', amount: '-83.09', type: 'debit', avatarKind: 'khqr', avatarColor: '#E8002D',  },
+    { id: 40, name: 'TELA Telecom', amount: '-172.35', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '5 តុលា 2026', items: [
+    { id: 41, name: 'PassApp Taxi', amount: '-117.87', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '4 តុលា 2026', items: [
+    { id: 42, name: 'Starbucks Cambodia', amount: '-52.07', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+    { id: 43, name: 'Nisai Media', amount: '-10.21', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '3 តុលា 2026', items: [
+    { id: 44, name: 'VATTANAC BANK', amount: '+95.21', type: 'credit', avatarKind: 'initials', initials: 'VB', avatarColor: '#2563EB', badge: 'check' },
+    { id: 45, name: 'SALARY BONUS', amount: '+61184.44', type: 'credit', avatarKind: 'initials', initials: 'SB', avatarColor: '#2563EB', badge: 'check' },
+  ] },
+  { date: '2 តុលា 2026', items: [
+    { id: 46, name: 'PassApp Taxi', amount: '-22.18', type: 'debit', avatarKind: 'store', avatarColor: '#1E3A8A',  },
+  ] },
+  { date: '1 តុលា 2026', items: [
+    { id: 47, name: 'ABA Bank Fee', amount: '-422.91', type: 'debit', avatarKind: 'khqr', avatarColor: '#E8002D',  },
+    { id: 48, name: 'ACLEDA Bank Transfer', amount: '+575.74', type: 'credit', avatarKind: 'initials', initials: 'AB', avatarColor: '#2563EB', badge: 'check' },
+  ] },
 ];
 
 /* ── Static statement data by date (KHR) ── */
