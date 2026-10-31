@@ -1,24 +1,29 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 import { Check, ChevronLeft, Pencil, Share2, Download, Delete, X } from 'lucide-react';
 import { accounts } from '@/data/accounts';
 import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
+import { addTxn } from '@/lib/txnStore';
+import { deductBalance } from '@/lib/balanceStore';
 
 type Step = 'amount' | 'processing' | 'success';
 type Currency = 'USD' | 'KHR';
+
+/* Dynamic bank badge (set from scanned QR at page root) */
+const _badge = { short: 'MB', color: '#005BAA' };
 
 const DARK_TEAL: React.CSSProperties = {
   background: 'linear-gradient(165deg, #164654 0%, #0C2A33 55%, #071A21 100%)',
 };
 
-/* MBCambodia-style bank badge (white circle + blue MB wordmark) */
+/* Bank badge — wordmark comes from scanned QR bank info */
 const BankBadge = ({ size = 64 }: { size?: number }) => (
   <div
     className="rounded-full bg-white flex items-center justify-center shadow-lg"
     style={{ width: size, height: size }}
   >
-    <span style={{ color: '#005BAA', fontWeight: 900, fontSize: size * 0.32, letterSpacing: '-0.5px' }}>
-      MB<span style={{ fontSize: size * 0.18, verticalAlign: 'super' }}>★</span>
+    <span style={{ color: _badge.color, fontWeight: 900, fontSize: size * 0.28, letterSpacing: '-0.5px' }}>
+      {_badge.short.slice(0, 6)}
     </span>
   </div>
 );
@@ -237,7 +242,7 @@ const SuccessScreen = ({
   return (
     <div
       className="min-h-[100dvh] flex flex-col items-center px-5 pt-16 pb-6"
-      style={{ background: 'linear-gradient(180deg, #E9EFE2 0%, #DDE4D3 100%)' }}
+      style={{ background: '#F2F2F7' }}
     >
       {/* Check + title */}
       <div className="w-16 h-16 rounded-full bg-[#B8D4BE] flex items-center justify-center shadow-md">
@@ -296,16 +301,16 @@ const SuccessScreen = ({
       {/* Share / Download */}
       <div className="flex gap-8 mt-6">
         <button className="flex flex-col items-center gap-1.5 active:opacity-70">
-          <span className="w-12 h-12 rounded-full bg-[#C9D6BE] flex items-center justify-center shadow">
-            <Share2 className="w-5 h-5 text-[#4A5B3E]" />
+          <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow">
+            <Share2 className="w-5 h-5 text-gray-600" />
           </span>
-          <span className="text-[11px] font-bold text-[#4A5B3E]">ចែករំលែក</span>
+          <span className="text-[11px] font-bold text-gray-600">ចែករំលែក</span>
         </button>
         <button className="flex flex-col items-center gap-1.5 active:opacity-70">
-          <span className="w-12 h-12 rounded-full bg-[#C9D6BE] flex items-center justify-center shadow">
-            <Download className="w-5 h-5 text-[#4A5B3E]" />
+          <span className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow">
+            <Download className="w-5 h-5 text-gray-600" />
           </span>
-          <span className="text-[11px] font-bold text-[#4A5B3E]">ទាញយក</span>
+          <span className="text-[11px] font-bold text-gray-600">ទាញយក</span>
         </button>
       </div>
 
@@ -314,7 +319,7 @@ const SuccessScreen = ({
         onClick={() => setLocation('/')}
         className="w-full max-w-[360px] mt-auto pt-6"
       >
-        <span className="block w-full py-3.5 rounded-[14px] bg-[#C9DCC0] text-[#3E5B45] text-[15px] font-extrabold text-center shadow active:scale-[0.99] transition-transform">
+        <span className="block w-full py-3.5 rounded-[14px] bg-[#E8002D] text-white text-[15px] font-extrabold text-center shadow active:scale-[0.99] transition-transform">
           ទំព័រដើម
         </span>
       </button>
@@ -345,8 +350,13 @@ const NoteModal = ({ value, onChange, onClose }: { value: string; onChange: (v: 
 /* ─── Page root ───────────────────────────────────────────────────────────── */
 export default function PayFlow() {
   const pending = getPendingTransfer();
-  const payeeName = (pending?.data as any)?.name || 'THOEURN SAROEUN';
-  const bankName = (pending?.data as any)?.bank?.name || 'MB BANK (CAMBODIA) PLC';
+  const pd = pending?.data as any;
+  const payeeName = pd?.name || 'THOEURN SAROEUN';
+  const bankName = pd?.bank?.name || 'MB BANK (CAMBODIA) PLC';
+  const bankColor = pd?.bank?.color || '#005BAA';
+  const payeeAccount = pd?.account || pd?.bakongId || '600980842';
+  _badge.short = pd?.bank?.short || 'MB';
+  _badge.color = bankColor;
 
   const [step, setStep] = useState<Step>('amount');
   const [currency, setCurrency] = useState<Currency>('USD');
@@ -362,8 +372,27 @@ export default function PayFlow() {
     }
   }, [step]);
 
+  const recordedRef = useRef(false);
   useEffect(() => {
-    if (step === 'success') clearPendingTransfer();
+    if (step === 'success') {
+      clearPendingTransfer();
+      if (!recordedRef.current) {
+        recordedRef.current = true;
+        try {
+          addTxn({
+            name: payeeName,
+            amount: amountStr || '0.01',
+            currency,
+            bankName,
+            bankColor,
+            bakongId: payeeAccount,
+            accountNumber: accounts[fromIdx % accounts.length].number,
+            note: note || undefined,
+          });
+          deductBalance(accounts[fromIdx % accounts.length].id, Number(amountStr || '0.01'));
+        } catch { /* storage unavailable */ }
+      }
+    }
   }, [step]);
 
   if (step === 'processing') return <ProcessingScreen payeeName={payeeName} bankName={bankName} />;

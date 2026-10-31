@@ -376,7 +376,7 @@ export default function Scanner() {
       scannedRef.current = true;
       setPulse(true);
       setTimeout(() => setPulse(false), 500);
-      setTimeout(() => { setLastRaw(raw); setResult({ data: res.data, verified: true }); }, 250);
+      setTimeout(() => { setLastRaw(raw); setPendingTransfer(res.data, raw); setLocation('/pay'); }, 250);
       return;
     }
     // Strict verification failed → still try to read what is in the QR,
@@ -387,7 +387,7 @@ export default function Scanner() {
       scannedRef.current = true;
       setPulse(true);
       setTimeout(() => setPulse(false), 500);
-      setTimeout(() => { setLastRaw(raw); setResult({ data: lenData, verified: false, reason: res.reason }); }, 250);
+      setTimeout(() => { setLastRaw(raw); setPendingTransfer(lenData, raw); setLocation('/pay'); }, 250);
       return;
     }
     if (res.reason === 'crc')        showToast('error', 'QR is corrupted (CRC check failed)');
@@ -428,12 +428,12 @@ export default function Scanner() {
       setPulse(true); setTimeout(() => setPulse(false), 500);
       if (code) {
         const res = parseKHQRDetail(code.data);
-        if (res.ok) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setResult({ data: res.data, verified: true }); }, 250); }
+        if (res.ok) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setPendingTransfer(res.data, code.data); setLocation('/pay'); }, 250); }
         else {
           // Failed verification → still surface readable info, flagged unverified.
           const len = parseKHQRLenient(code.data);
           const lenData = len.data;
-          if (lenData) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setResult({ data: lenData, verified: false, reason: res.reason }); }, 250); }
+          if (lenData) { scannedRef.current = true; setTimeout(() => { setLastRaw(code.data); setPendingTransfer(lenData, code.data); setLocation('/pay'); }, 250); }
           else if (res.reason === 'not-bakong') showToast('error', 'QR is not a Bakong / KHQR code');
           else if (res.reason === 'crc')        showToast('error', 'QR is corrupted (CRC check failed)');
           else                                  showToast('error', 'Unreadable QR code');
@@ -451,7 +451,7 @@ export default function Scanner() {
     demoIdx++;
     setPulse(true); setTimeout(() => setPulse(false), 500);
     const res = parseKHQRDetail(entry.qr);
-    if (res.ok) setTimeout(() => { scannedRef.current = true; setLastRaw(entry.qr); setResult({ data: res.data, verified: true }); }, 300);
+    if (res.ok) setTimeout(() => { scannedRef.current = true; setLastRaw(entry.qr); setPendingTransfer(res.data, entry.qr); setLocation('/pay'); }, 300);
   };
 
   /* ── Torch ── */
