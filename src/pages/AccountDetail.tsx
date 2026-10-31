@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, QrCode, BarChart2, MoreVertical, ChevronDown, Store, FileText } from 'lucide-react';
+import { ArrowLeft, QrCode, BarChart2, MoreVertical, ChevronDown, Store, FileText, Eye, EyeOff } from 'lucide-react';
 import { useLocation, useParams } from 'wouter';
 import { accounts } from '../data/accounts';
 import { getDynamicTxns, todayStatementDate } from '../lib/txnStore';
@@ -181,6 +181,7 @@ export default function AccountDetail() {
   const params = useParams<{ id: string }>();
   const account = accountData[params.id] ?? accountData['1'];
   const [showAll, setShowAll] = useState(false);
+  const [hideTxns, setHideTxns] = useState(true); // transaction records hidden by default
 
   const staticGroups = account.currency === 'KHR' ? khrByDate : usdByDate;
   const visibleGroups = showAll ? staticGroups : staticGroups.slice(0, 2);
@@ -204,11 +205,11 @@ export default function AccountDetail() {
     >
       <TxAvatar tx={tx} />
       <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-bold text-gray-900 truncate">{tx.name}</p>
+        <p className="text-[14px] font-bold text-gray-900 truncate">{hideTxns ? '••••••••••' : tx.name}</p>
       </div>
       <div className="text-right shrink-0">
         <span className={`text-[15px] font-extrabold ${tx.type === 'debit' ? 'text-[#E8002D]' : 'text-[#16A34A]'}`}>
-          {tx.amount}
+          {hideTxns ? '••••' : tx.amount}
         </span>
         <span className="text-[10px] font-bold text-gray-400 ml-1">{tx.currency === 'KHR' ? 'KHR' : 'USD'}</span>
       </div>
@@ -256,6 +257,17 @@ export default function AccountDetail() {
 
         {/* ── Transaction list ── */}
         <div className="flex-1 overflow-y-auto bg-white">
+          {/* Hide/show transaction records toggle (hidden by default) */}
+          <div className="flex items-center justify-between px-5 pt-3 pb-1">
+            <p className="text-[13px] font-bold text-gray-500">ប្រវត្តិប្រតិបត្តិការ · Transactions</p>
+            <button
+              onClick={() => setHideTxns(!hideTxns)}
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:scale-95 transition-transform"
+              aria-label={hideTxns ? 'បង្ហាញប្រវត្តិ' : 'លាក់ប្រវត្តិ'}
+            >
+              {hideTxns ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
           {/* Dynamic txns (today) */}
           {dynamicTxns.length > 0 && (
             <div className="px-5 pt-3 pb-1">
