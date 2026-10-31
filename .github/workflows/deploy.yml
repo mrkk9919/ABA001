@@ -30,10 +30,10 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile 2>&1 | tee install.log
 
       - name: Build
-        run: pnpm build
+        run: pnpm build 2>&1 | tee build.log
         env:
           BASE_PATH: /ABA001/
           PORT: "5173"
@@ -46,6 +46,15 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/public
+
+      - name: Upload build logs (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            install.log
+            build.log
 
   deploy:
     needs: build
