@@ -611,12 +611,11 @@ const ReceiveOptionsSheet = ({ open, onClose }: { open: boolean; onClose: () => 
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.94 }}
-            transition={{ type: 'spring', damping: 26, stiffness: 320 }}
-            style={{ x: '-50%', y: '-50%' }}
-            className="absolute left-1/2 top-1/2 w-[92%] max-w-[340px] max-h-[85%] overflow-y-auto hide-scrollbar bg-white rounded-[24px] z-50 pb-6 shadow-2xl"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="absolute bottom-0 left-0 right-0 max-h-[85%] overflow-y-auto hide-scrollbar bg-white rounded-t-[24px] z-50 pb-8 shadow-2xl"
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-2">
