@@ -17,9 +17,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ABA" />
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+    <link rel="manifest" href="/ABA001/manifest.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/ABA001/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/ABA001/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/ABA001/icons/icon-512.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +32,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register('./sw.js').catch(function () {});
+          navigator.serviceWorker.register('/ABA001/sw.js').catch(function () {});
         });
       }
     </script>
