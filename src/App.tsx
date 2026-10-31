@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -54,16 +55,53 @@ function Router() {
   );
 }
 
-function App() {
+/* ─── Splash gate — shows the ABA Mobile splash photo on every launch.
+   Tap anywhere (or wait 2.5s) to enter. Matches "installed app" feel. */
+const SPLASH_IMG = `${import.meta.env.BASE_URL}splash.webp`;
+function SplashGate({ onDone }: { onDone: () => void }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <div
+      onClick={onDone}
+      className="fixed inset-0 z-[9999] bg-[#0F1B33] flex flex-col items-center justify-center cursor-pointer select-none"
+    >
+      <img
+        src={SPLASH_IMG}
+        alt="ABA Mobile"
+        className="absolute inset-0 w-full h-full object-cover"
+        draggable={false}
+      />
+      <div className="relative mt-auto mb-12 flex flex-col items-center gap-3">
+        <div
+          className="w-8 h-8 rounded-full border-2 border-white/30 border-t-white"
+          style={{ animation: 'splashSpin 0.9s linear infinite' }}
+        />
+        <p className="text-white/85 text-[13px] font-medium tracking-wide">
+          ចុចដើម្បីចូល · Tap to enter
+        </p>
+      </div>
+      <style>{`@keyframes splashSpin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
+function App() {
+  const [splashDone, setSplashDone] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSplashDone(true), 2500);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <>
+      {!splashDone && <SplashGate onDone={() => setSplashDone(true)} />}
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </>
   );
 }
 
