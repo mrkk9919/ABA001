@@ -1,6 +1,12 @@
 import React from 'react';
 import { BANK_MAP } from '@/lib/khqr';
 
+/* Real logo images (user-provided). Keys = lowercase bank code.
+   If present, the real PNG is rendered instead of the SVG gradient tile. */
+const REAL_LOGOS: Record<string, string> = {
+  emny: 'bank-logos/emny.png',
+};
+
 /**
  * Bank brand logo chip — SVG gradient tile with the bank's wordmark.
  * Unknown codes fall back to a neutral tile and the raw code, so every
@@ -38,6 +44,24 @@ const BankLogo = ({
   };
   const gid = `banklogo-${info.short}-${dim}`;
 
+  // Real logo image (if available for this bank)
+  const realLogo = bankCode ? REAL_LOGOS[bankCode.toLowerCase()] : undefined;
+  if (realLogo) {
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <img
+          src={`${import.meta.env.BASE_URL}${realLogo}`}
+          alt={bankName}
+          width={dim}
+          height={dim}
+          draggable={false}
+          className="shrink-0 object-contain bg-white"
+          style={{ borderRadius: radius, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}
+        />
+        <span className="text-[11px] font-bold text-gray-700 leading-none">{bankName}</span>
+      </span>
+    );
+  }
   return (
     <span className="inline-flex items-center gap-1.5">
       <svg width={dim} height={dim} viewBox={`0 0 ${dim} ${dim}`} className="shrink-0" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}>
