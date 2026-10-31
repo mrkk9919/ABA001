@@ -284,19 +284,8 @@ export default function AccountDetail() {
           <div className="flex-1 min-w-0">
             <p className="text-[17px] font-extrabold text-gray-900 leading-tight truncate">{account.name}</p>
             <p className="text-[12px] text-gray-500 font-semibold leading-tight">
-              {account.number} <span className="mx-1">|</span> {getBalance(account.id, account.balance)} {account.currency}
+              {account.number}
             </p>
-          </div>
-          <div className="flex items-center gap-4 shrink-0">
-            <button className="text-gray-700 hover:text-gray-900 transition-colors">
-              <QrCode className="w-5 h-5" strokeWidth={2} />
-            </button>
-            <button className="text-gray-700 hover:text-gray-900 transition-colors">
-              <BarChart2 className="w-5 h-5" strokeWidth={2} />
-            </button>
-            <button className="text-gray-700 hover:text-gray-900 transition-colors">
-              <MoreVertical className="w-5 h-5" strokeWidth={2} />
-            </button>
           </div>
         </div>
 
