@@ -36,10 +36,8 @@ type InternalTpl = {
 
 const internalTpl = (o: InternalTpl): { label: string; value: string }[] => [
   { label: 'លេខកូដប្រតិបត្តិការ', value: o.trx },
-  { label: 'From account', value: o.fromAccount },
   { label: 'Original amount', value: o.original },
   { label: 'Reference #', value: o.reference },
-  { label: 'Sender', value: o.sender },
   { label: 'To account', value: o.toAccount },
   { label: 'Transaction date', value: o.date },
 ];
@@ -66,10 +64,7 @@ const bakongTpl = (o: BakongTpl): Pick<TxDetail, 'status' | 'fields'> => ({
     { label: 'លេខកូដប្រតិបត្តិការ', value: o.trx },
     { label: 'Bakong hash #', value: o.hash },
     { label: 'Bank', value: o.bank },
-    { label: 'From account', value: 'qiang (150 614 168)' },
     { label: 'Original amount', value: o.original },
-    { label: 'Reference #', value: o.reference },
-    { label: 'Seller', value: o.seller },
     { label: 'Transaction date', value: o.date },
   ],
 });
@@ -95,7 +90,6 @@ const cardTpl = (o: CardTpl): { label: string; value: string }[] => [
   { label: 'Card#', value: o.card },
   { label: 'Cardholder', value: o.cardholder },
   { label: 'Clearing time', value: o.clearing },
-  { label: 'From account', value: 'qiang (150 614 168)' },
   { label: 'Original amount', value: o.original },
   { label: 'RRN#', value: o.rrn },
   { label: 'Terminal location', value: o.terminalLocation },

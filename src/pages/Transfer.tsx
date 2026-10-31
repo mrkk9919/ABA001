@@ -279,12 +279,10 @@ const SuccessScreen = ({ data, amount, currency, payeeAmount, payeeCurrency, onD
 
   const details: [string, string][] = [
     ['លេខកូដប្រតិបត្តិការ:', txCode],
-    ['From account:', acct.number],
     ['Original amount:', payeeAmount && payeeCurrency && payeeCurrency !== currency
       ? `${payeeCurrency === 'KHR' ? Number(payeeAmount).toLocaleString() + ' ៛' : '$' + Number(payeeAmount).toFixed(2)}`
       : amt],
     ['Reference #:', ref],
-    ['Sender:', acct.name],
     ['To account:', `${data.merchantName} (${toAccount})`],
     ['Transaction date:', dateStr],
   ];
@@ -301,18 +299,14 @@ const SuccessScreen = ({ data, amount, currency, payeeAmount, payeeCurrency, onD
   /* ── eMoney receipt: Sent / Processed / Delivered + Bank: EMNY ──────────── */
   if (isBakong && data.bankCode === 'emoney') {
     const hash = Math.random().toString(16).slice(2, 10);
-    const emRef = '100FT' + txCode;
     const stepTime = `${String(now.getDate()).padStart(2, '0')} ${now.toLocaleString('en-US', { month: 'short' })} ${now.getFullYear()} | ${now.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}`;
     const emDetails: [string, string][] = [
       ['Trx. ID:', txCode],
       ['Bakong hash #:', hash],
       ['Bank:', 'EMNY'],
-      ['From account:', `${acct.name} (${acct.number})`],
       ['Original amount:', payeeAmount && payeeCurrency && payeeCurrency !== currency
         ? `${payeeCurrency === 'KHR' ? Number(payeeAmount).toLocaleString() + ' ៛' : '$' + Number(payeeAmount).toFixed(2)}`
         : `${Number(amount).toFixed(2)} USD`],
-      ['Reference #:', emRef],
-      ['Seller:', data.merchantName],
       ['Transaction date:', dateStr],
     ];
     const emSteps = [
@@ -410,12 +404,9 @@ const SuccessScreen = ({ data, amount, currency, payeeAmount, payeeCurrency, onD
       ['លេខកូដប្រតិបត្តិការ:', txCode],
       ['Bakong hash #:', hash],
       ['Bank:', data.bankName],
-      ['From account:', `${acct.name} (${acct.number})`],
       ['Original amount:', payeeAmount && payeeCurrency && payeeCurrency !== currency
         ? `${payeeCurrency === 'KHR' ? Number(payeeAmount).toLocaleString() + ' ៛' : '$' + Number(payeeAmount).toFixed(2)}`
         : `${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`],
-      ['Reference #:', ref],
-      ['Seller:', data.merchantName],
       ['Transaction date:', dateStr],
     ];
 
