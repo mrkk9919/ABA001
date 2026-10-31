@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import PinLock from '@/components/PinLock';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
@@ -86,21 +87,35 @@ function SplashGate({ onDone }: { onDone: () => void }) {
 
 function App() {
   const [splashDone, setSplashDone] = useState(false);
+  const [pinUnlocked, setPinUnlocked] = useState<boolean>(() => {
+    try { return sessionStorage.getItem('aba.pin.unlocked') === '1'; } catch { return false; }
+  });
   useEffect(() => {
     const t = setTimeout(() => setSplashDone(true), 2500);
     return () => clearTimeout(t);
   }, []);
+  const gated = !splashDone || !pinUnlocked;
   return (
     <>
       {!splashDone && <SplashGate onDone={() => setSplashDone(true)} />}
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
+      {splashDone && !pinUnlocked && (
+        <PinLock
+          title="បញ្ចូលលេខសម្ងាត់"
+          subtitle="បញ្ចូល PIN ដើម្បីចូលក្នុងកម្មវិធី · Enter PIN to enter the app"
+          storageKey="aba.pin.unlocked"
+          onUnlock={() => setPinUnlocked(true)}
+        />
+      )}
+      {!gated && (
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </QueryClientProvider>
+      )}
     </>
   );
 }

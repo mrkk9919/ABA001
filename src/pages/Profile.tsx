@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
+import PinLock from '@/components/PinLock';
 import { X, Pencil, Check, User } from 'lucide-react';
 
 /* ─── Grey/white cartoon cat avatar (Tom style, same as Home/Settings) ─── */
@@ -62,6 +63,19 @@ export default function Profile() {
   const [editing, setEditing] = useState<FieldKey | null>(null);
   const [draft, setDraft] = useState('');
   const [toast, setToast] = useState(false);
+  const [profileUnlocked, setProfileUnlocked] = useState<boolean>(() => {
+    try { return sessionStorage.getItem('aba.profile.unlocked') === '1'; } catch { return false; }
+  });
+  if (!profileUnlocked) {
+    return (
+      <PinLock
+        title="បញ្ចូលលេខសម្ងាត់"
+        subtitle="បញ្ចូល PIN ដើម្បីចូលមជ្ឈដ្ឋានផ្ទាល់ខ្លួន · Enter PIN to access personal center"
+        storageKey="aba.profile.unlocked"
+        onUnlock={() => setProfileUnlocked(true)}
+      />
+    );
+  }
 
   const startEdit = (k: FieldKey) => {
     setEditing(k);
