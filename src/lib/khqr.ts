@@ -39,6 +39,7 @@ function B(name: string, color: string, short: string, aliases: string[] = []): 
 
 export const BANK_MAP: Record<string, BankInfo> = {
   ...B('ABA Bank', '#E8002D', 'ABA', ['ababank', 'abaa']),
+  ...B('eMoney Cambodia', '#00A86B', 'eMoney', ['emny', 'emoney', 'emc']),
   ...B('ACLEDA Bank Plc.', '#005BAA', 'ACLEDA', ['aclb', 'acledabank', 'acledabank_plc']),
   ...B('Wing Bank (Cambodia) Plc.', '#D97706', 'WING', ['wingbank', 'wing']),
   ...B('Canadia Bank Plc.', '#003DA5', 'CANADIA', ['canadiabank']),

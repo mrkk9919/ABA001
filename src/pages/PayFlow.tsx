@@ -118,9 +118,6 @@ const AmountScreen = ({
         <BankLogo bankCode={bankCode} bankName={bankName} size="xl" />
         <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
         <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
-        {payeeAccount && (
-          <p className="mt-1 text-[10px] text-white/35 font-mono tracking-wide">{payeeAccount}</p>
-        )}
       </div>
 
       {/* Currency toggle */}
