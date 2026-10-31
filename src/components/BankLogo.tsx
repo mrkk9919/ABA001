@@ -14,15 +14,15 @@ const BankLogo = ({
 }: {
   bankCode?: string;
   bankName: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }) => {
   const info = bankCode
     ? (BANK_MAP[bankCode.toLowerCase()] ?? { color: '#374151', short: bankCode.slice(0, 6).toUpperCase() })
     : { color: '#374151', short: '?' };
 
-  const dim = size === 'sm' ? 24 : size === 'lg' ? 40 : 28;
-  const baseFont = size === 'sm' ? 8 : size === 'lg' ? 13 : 10;
-  const radius = size === 'sm' ? 6 : size === 'lg' ? 12 : 8;
+  const dim = size === 'sm' ? 24 : size === 'lg' ? 40 : size === 'xl' ? 72 : 28;
+  const baseFont = size === 'sm' ? 8 : size === 'lg' ? 13 : size === 'xl' ? 20 : 10;
+  const radius = size === 'sm' ? 6 : size === 'lg' ? 12 : size === 'xl' ? 18 : 8;
   // Use the full wordmark (capped at 6 chars) and shrink the font to fit,
   // so PIPAY / CANADIA / SATHAPANA never get mis-truncated to PIPA / CANA.
   const wordmark = info.short === '?' ? '?' : info.short.slice(0, 6);

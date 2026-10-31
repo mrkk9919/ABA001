@@ -6,6 +6,7 @@ import { getPendingTransfer, clearPendingTransfer } from '@/lib/transferState';
 import { addTxn } from '@/lib/txnStore';
 import { deductBalance } from '@/lib/balanceStore';
 import { BANK_MAP } from '@/lib/khqr';
+import BankLogo from '@/components/BankLogo';
 import { getTtsLang, speakTransferSuccessSmart } from '@/lib/tts';
 
 type Step = 'amount' | 'processing' | 'success';
@@ -41,6 +42,7 @@ const AmountScreen = ({
   bankName,
   bankShort,
   bankColor,
+  bankCode,
   payeeAccount,
   currency,
   setCurrency,
@@ -55,6 +57,7 @@ const AmountScreen = ({
   bankName: string;
   bankShort: string;
   bankColor: string;
+  bankCode: string;
   payeeAccount: string;
   currency: Currency;
   setCurrency: (c: Currency) => void;
@@ -112,7 +115,7 @@ const AmountScreen = ({
 
       {/* Payee */}
       <div className="flex flex-col items-center pt-2 pb-4">
-        <BankBadge size={72} short={bankShort} color={bankColor} />
+        <BankLogo bankCode={bankCode} bankName={bankName} size="xl" />
         <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
         <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
         {payeeAccount && (
@@ -200,15 +203,17 @@ const ProcessingScreen = ({
   bankName,
   bankShort,
   bankColor,
+  bankCode,
 }: {
   payeeName: string;
   bankName: string;
   bankShort: string;
   bankColor: string;
+  bankCode: string;
 }) => (
   <div className="min-h-[100dvh] flex flex-col items-center text-white" style={DARK_TEAL}>
     <div className="flex flex-col items-center pt-24">
-      <BankBadge size={72} short={bankShort} color={bankColor} />
+      <BankLogo bankCode={bankCode} bankName={bankName} size="xl" />
       <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
       <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
     </div>
@@ -237,6 +242,7 @@ const SuccessScreen = ({
   bankName,
   bankShort,
   bankColor,
+  bankCode,
   fromNumber,
 }: {
   amount: string;
@@ -245,6 +251,7 @@ const SuccessScreen = ({
   bankName: string;
   bankShort: string;
   bankColor: string;
+  bankCode: string;
   fromNumber: string;
 }) => {
   const [, setLocation] = useLocation();
@@ -284,7 +291,7 @@ const SuccessScreen = ({
       <div className="w-full max-w-[360px] mt-5 bg-white rounded-[22px] shadow-xl overflow-hidden">
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center gap-3">
-            <BankBadge size={40} short={bankShort} color={bankColor} />
+            <BankLogo bankCode={bankCode} bankName={bankName} size="lg" />
             <div>
               <p className="text-[24px] font-extrabold text-gray-900 leading-none">{amt}</p>
               <p className="text-[14px] font-semibold text-gray-600 mt-1">{payeeName}</p>
@@ -383,6 +390,7 @@ export default function PayFlow() {
   const pd = pending?.data as any;
   const payeeName = pd?.merchantName || 'THOEURN SAROEUN';
   const bankName = pd?.bankName || 'MB BANK (CAMBODIA) PLC';
+  const bankCode = pd?.bankCode || '';
   const bankColor = pd?.bankColor || '#005BAA';
   const payeeAccount = pd?.accountNumber || pd?.bakongId || '';
   const bankShort = (pd?.bankCode && (BANK_MAP as any)[pd.bankCode]?.short) || bankName.split(' ').filter(Boolean)[0]?.slice(0, 4).toUpperCase() || 'MB';
@@ -417,6 +425,7 @@ export default function PayFlow() {
             currency,
             bankName,
             bankColor,
+  bankCode,
             bakongId: payeeAccount,
             accountNumber: accounts[fromIdx % accounts.length].number,
             note: note || undefined,
@@ -433,7 +442,7 @@ export default function PayFlow() {
   }, [step]);
 
   if (step === 'processing')
-    return <ProcessingScreen payeeName={payeeName} bankName={bankName} bankShort={bankShort} bankColor={bankColor} />;
+    return <ProcessingScreen payeeName={payeeName} bankName={bankName} bankShort={bankShort} bankColor={bankColor} bankCode={bankCode} />;
   if (step === 'success')
     return (
       <SuccessScreen
@@ -442,7 +451,7 @@ export default function PayFlow() {
         payeeName={payeeName}
         bankName={bankName}
         bankShort={bankShort}
-        bankColor={bankColor}
+        bankColor={bankColor} bankCode={bankCode}
         fromNumber={accounts[fromIdx % accounts.length].number}
       />
     );
@@ -453,7 +462,7 @@ export default function PayFlow() {
         payeeName={payeeName}
         bankName={bankName}
         bankShort={bankShort}
-        bankColor={bankColor}
+        bankColor={bankColor} bankCode={bankCode}
         payeeAccount={payeeAccount}
         currency={currency}
         setCurrency={setCurrency}
