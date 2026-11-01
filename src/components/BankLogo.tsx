@@ -7,6 +7,19 @@ const REAL_LOGOS: Record<string, string> = {
   emny: 'bank-logos/emny.png',
   ababank: 'bank-logos/aba.png',
   abaa: 'bank-logos/aba.png',
+  mbcambodia: 'bank-logos/mb.png',
+  mb: 'bank-logos/mb.png',
+  aclb: 'bank-logos/acleda.png',
+  acledabank: 'bank-logos/acleda.png',
+  acledabank_plc: 'bank-logos/acleda.png',
+  pipay: 'bank-logos/pipay.png',
+  pippay: 'bank-logos/pipay.png',
+  canadiabank: 'bank-logos/canadia.png',
+  chipmong: 'bank-logos/chipmong.png',
+  wingbank: 'bank-logos/wing.png',
+  wing: 'bank-logos/wing.png',
+  vattanacbank: 'bank-logos/vattanac.png',
+  cambodianpublicbank: 'bank-logos/publicbank.png',
 };
 
 /** True when the bank has a real logo image (vs. the SVG wordmark tile). */
@@ -24,10 +37,12 @@ const BankLogo = ({
   bankCode,
   bankName,
   size = 'md',
+  logoOnly = false,
 }: {
   bankCode?: string;
   bankName: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  logoOnly?: boolean;
 }) => {
   const info = bankCode
     ? (BANK_MAP[bankCode.toLowerCase()] ?? { color: '#374151', short: bankCode.slice(0, 6).toUpperCase() })
@@ -54,46 +69,54 @@ const BankLogo = ({
   // Real logo image (if available for this bank)
   const realLogo = bankCode ? REAL_LOGOS[bankCode.toLowerCase()] : undefined;
   if (realLogo) {
+    const img = (
+      <img
+        src={`${import.meta.env.BASE_URL}${realLogo}`}
+        alt={bankName}
+        width={dim}
+        height={dim}
+        draggable={false}
+        className="shrink-0 object-contain bg-white"
+        style={{ borderRadius: radius, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}
+      />
+    );
+    if (logoOnly) return img;
     return (
       <span className="inline-flex items-center gap-1.5">
-        <img
-          src={`${import.meta.env.BASE_URL}${realLogo}`}
-          alt={bankName}
-          width={dim}
-          height={dim}
-          draggable={false}
-          className="shrink-0 object-contain bg-white"
-          style={{ borderRadius: radius, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}
-        />
+        {img}
         <span className="text-[11px] font-bold text-gray-700 leading-none">{bankName}</span>
       </span>
     );
   }
+  const svg = (
+    <svg width={dim} height={dim} viewBox={`0 0 ${dim} ${dim}`} className="shrink-0" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}>
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={info.color} />
+          <stop offset="100%" stopColor={darken(info.color)} />
+        </linearGradient>
+      </defs>
+      <rect width={dim} height={dim} rx={radius} fill={`url(#${gid})`} />
+      <rect x="0.5" y="0.5" width={dim - 1} height={dim - 1} rx={radius} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+      <text
+        x="50%"
+        y="50%"
+        dominantBaseline="central"
+        textAnchor="middle"
+        fill="white"
+        fontSize={fontSize}
+        fontWeight="900"
+        letterSpacing="-0.3px"
+        fontFamily="system-ui, -apple-system, sans-serif"
+      >
+        {wordmark}
+      </text>
+    </svg>
+  );
+  if (logoOnly) return svg;
   return (
     <span className="inline-flex items-center gap-1.5">
-      <svg width={dim} height={dim} viewBox={`0 0 ${dim} ${dim}`} className="shrink-0" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.18))' }}>
-        <defs>
-          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={info.color} />
-            <stop offset="100%" stopColor={darken(info.color)} />
-          </linearGradient>
-        </defs>
-        <rect width={dim} height={dim} rx={radius} fill={`url(#${gid})`} />
-        <rect x="0.5" y="0.5" width={dim - 1} height={dim - 1} rx={radius} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="central"
-          textAnchor="middle"
-          fill="white"
-          fontSize={fontSize}
-          fontWeight="900"
-          letterSpacing="-0.3px"
-          fontFamily="system-ui, -apple-system, sans-serif"
-        >
-          {wordmark}
-        </text>
-      </svg>
+      {svg}
       <span className="text-[11px] font-bold text-gray-700 leading-none">{bankName}</span>
     </span>
   );

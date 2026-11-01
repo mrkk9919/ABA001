@@ -115,7 +115,7 @@ const AmountScreen = ({
 
       {/* Payee */}
       <div className="flex flex-col items-center pt-2 pb-4">
-        <BankLogo bankCode={bankCode} bankName={bankName} size="xl" />
+        <BankLogo bankCode={bankCode} bankName={bankName} size="xl" logoOnly />
         <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
         <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
       </div>
@@ -210,7 +210,7 @@ const ProcessingScreen = ({
 }) => (
   <div className="min-h-[100dvh] flex flex-col items-center text-white" style={DARK_TEAL}>
     <div className="flex flex-col items-center pt-24">
-      <BankLogo bankCode={bankCode} bankName={bankName} size="xl" />
+      <BankLogo bankCode={bankCode} bankName={bankName} size="xl" logoOnly />
       <p className="mt-3 text-[19px] font-bold tracking-wide">{payeeName}</p>
       <p className="mt-1 text-[11px] text-white/50">{bankName}</p>
     </div>
