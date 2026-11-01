@@ -237,7 +237,7 @@ export default function AccountDetail() {
   const params = useParams<{ id: string }>();
   const account = accountData[params.id] ?? accountData['1'];
   const [showAll, setShowAll] = useState(false);
-  const [hideTxns, setHideTxns] = useState(true); // transaction records hidden by default
+  const [hideTxns, setHideTxns] = useState(false); // transaction records visible by default
 
   const staticGroups = account.currency === 'KHR' ? khrByDate : usdByDate;
   const visibleGroups = showAll ? staticGroups : staticGroups.slice(0, 2);
@@ -302,16 +302,9 @@ export default function AccountDetail() {
 
         {/* ── Transaction list ── */}
         <div className="flex-1 overflow-y-auto bg-white">
-          {/* Hide/show transaction records toggle (hidden by default) */}
+          {/* Transaction list header */}
           <div className="flex items-center justify-between px-5 pt-3 pb-1">
             <p className="text-[13px] font-bold text-gray-500">ប្រវត្តិប្រតិបត្តិការ · Transactions</p>
-            <button
-              onClick={() => setHideTxns(!hideTxns)}
-              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:scale-95 transition-transform"
-              aria-label={hideTxns ? 'បង្ហាញប្រវត្តិ' : 'លាក់ប្រវត្តិ'}
-            >
-              {hideTxns ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
           </div>
           {/* Dynamic txns (today) */}
           {dynamicTxns.length > 0 && (
