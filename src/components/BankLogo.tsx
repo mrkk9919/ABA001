@@ -5,7 +5,14 @@ import { BANK_MAP } from '@/lib/khqr';
    If present, the real PNG is rendered instead of the SVG gradient tile. */
 const REAL_LOGOS: Record<string, string> = {
   emny: 'bank-logos/emny.png',
+  ababank: 'bank-logos/aba.png',
+  abaa: 'bank-logos/aba.png',
 };
+
+/** True when the bank has a real logo image (vs. the SVG wordmark tile). */
+export function hasRealLogo(bankCode?: string): boolean {
+  return !!bankCode && !!REAL_LOGOS[bankCode.toLowerCase()];
+}
 
 /**
  * Bank brand logo chip — SVG gradient tile with the bank's wordmark.
