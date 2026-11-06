@@ -2,14 +2,19 @@
   "name": "ABA Mobile",
   "short_name": "ABA",
   "description": "ABA Mobile Banking",
-  "start_url": "/ABA001/",
-  "scope": "/ABA001/",
+  "id": "aba-mobile",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "fullscreen"],
   "orientation": "portrait",
-  "background_color": "#0F1B33",
-  "theme_color": "#E8002D",
+  "background_color": "#015F7B",
+  "theme_color": "#015F7B",
+  "lang": "km",
+  "dir": "ltr",
   "icons": [
-    { "src": "/ABA001/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/ABA001/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
