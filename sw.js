@@ -1,6 +1,6 @@
 /* Minimal service worker — enables "Add to Home Screen" install prompt.
    Cache-first for same-origin static assets; network-first for everything else. */
-const CACHE = 'aba-mobile-v2';
+const CACHE = 'aba-mobile-v3';
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./'])));
