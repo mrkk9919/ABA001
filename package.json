@@ -10,6 +10,9 @@
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config drizzle.config.ts",
+    "db:check": "drizzle-kit check --config drizzle.config.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "build:ios": "PORT=5173 BASE_PATH=/ vite build --config vite.config.ts && cap sync ios",
@@ -69,6 +72,8 @@
     "clsx": "catalog:",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dotenv": "^18.0.10",
+    "drizzle-kit": "^0.31.11",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "catalog:",
     "input-otp": "^1.4.2",
@@ -93,7 +98,9 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "drizzle-orm": "catalog:",
     "jsqr": "^1.4.0",
+    "postgres": "^4.1.0",
     "qrcode": "^1.5.4"
   }
 }
