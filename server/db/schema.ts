@@ -32,6 +32,13 @@ export const transactionSourceEnum = pgEnum('transaction_source', [
   'manual',
   'import',
 ]);
+export const bankConnectionStatusEnum = pgEnum('bank_connection_status', [
+  'pending',
+  'connected',
+  'expired',
+  'revoked',
+  'error',
+]);
 
 /** Application user. Never store a raw PIN or password here. */
 export const users = pgTable(
@@ -42,14 +49,42 @@ export const users = pgTable(
     phone: text('phone'),
     email: text('email'),
     avatarUrl: text('avatar_url'),
-    pinHash: text('pin_hash'),
+    appPaymentPinHash: text('app_payment_pin_hash'),
     themeId: text('theme_id').default('sixties').notNull(),
+    failedLoginAttempts: integer('failed_login_attempts').default(0).notNull(),
+    lockedUntil: timestamp('locked_until', { withTimezone: true }),
+    lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     uniqueIndex('users_email_unique').on(table.email),
     uniqueIndex('users_phone_unique').on(table.phone),
+  ],
+);
+
+/**
+ * Bank OAuth/API connection metadata. Store ciphertext only; the encryption
+ * key belongs in a deployment secret manager and never in PostgreSQL or Git.
+ */
+export const bankConnections = pgTable(
+  'bank_connections',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    provider: text('provider').notNull(),
+    externalCustomerId: text('external_customer_id'),
+    status: bankConnectionStatusEnum('status').default('pending').notNull(),
+    encryptedAccessToken: text('encrypted_access_token'),
+    encryptedRefreshToken: text('encrypted_refresh_token'),
+    tokenExpiresAt: timestamp('token_expires_at', { withTimezone: true }),
+    lastSyncedAt: timestamp('last_synced_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('bank_connections_user_idx').on(table.userId),
+    uniqueIndex('bank_connections_user_provider_unique').on(table.userId, table.provider),
   ],
 );
 
