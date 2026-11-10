@@ -127,14 +127,6 @@ export default function HomeRedesign({ onSwitch }: { onSwitch: () => void }) {
             <span className="text-[12px] leading-relaxed opacity-95">{theme.greetingKh}</span>
             <span className="text-[19px] font-bold leading-tight tracking-wide">Yukheang</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setThemeOpen(true)}
-            className="ml-auto flex items-center gap-1 self-end rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[9px] text-[#fff5e1]"
-          >
-            <span>🎨</span>
-            <span>{theme.khName}</span>
-          </button>
         </header>
 
         {/* Balance card */}
